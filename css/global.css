@@ -1,0 +1,176 @@
+/* ═══════════ RESET & VARS ═══════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --cb:#00f2ff; --nm:#00ff9d; --obs:#03030d; --gold:#f0c040;
+  --warn:#ff3366; --purple:#b44dff; --txt:#b8ccee;
+  --dim:rgba(200, 218, 245, 0.89); --glass:rgba(3,8,28,.88);
+  --fd:'Orbitron',sans-serif; --fm:'JetBrains Mono',monospace;
+  --gcb:0 0 24px rgba(0,242,255,.45),0 0 50px rgba(0,242,255,.18);
+  --gnm:0 0 20px rgba(0,255,157,.4),0 0 40px rgba(0,255,157,.15);
+}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-y:scroll}
+body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);color:var(--txt);cursor:none;-webkit-font-smoothing:antialiased}
+
+/* ═══════════ CURSOR ═══════════ */
+#cur{position:fixed;width:22px;height:22px;border:1.5px solid var(--cb);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .22s,height .22s,background .22s,border-color .22s;mix-blend-mode:screen}
+#curd{position:fixed;width:4px;height:4px;background:var(--cb);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+.hov #cur{width:52px!important;height:52px!important;background:rgba(0,242,255,.055)!important;border-color:var(--nm)!important}
+
+/* ═══════════ TOPBAR ═══════════ */
+#topbar{position:fixed;top:0;left:0;width:100%;height:52px;display:flex;align-items:center;padding:0 32px;z-index:500;justify-content:space-between;background:linear-gradient(180deg,rgba(3,3,13,.96) 0%,transparent 100%);border-bottom:1px solid rgba(0,242,255,.05);backdrop-filter:blur(6px)}
+.tlogo{font-family:var(--fd);font-size:13px;font-weight:900;letter-spacing:.55em;color:var(--cb);text-shadow:var(--gcb)}
+#tclock{font-family:var(--fd);font-size:9px;letter-spacing:.25em;color:rgba(0, 242, 255, 0.856)}
+
+/* ═══════════ TOPBAR LANG NAV ═══════════ */
+.lang-nav{display:flex;gap:4px;align-items:center}
+.ln-btn{background:transparent;border:1px solid rgba(0,242,255,.18);color:rgba(184,204,238,.35);font-family:var(--fd);font-size:8px;letter-spacing:.28em;padding:4px 10px;cursor:pointer;transition:all .22s;text-transform:uppercase;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.ln-btn:hover{border-color:rgba(0,242,255,.5);color:var(--cb)}
+.ln-btn.active{background:rgba(0,242,255,.08);border-color:var(--cb);color:var(--cb);box-shadow:0 0 12px rgba(0,242,255,.15)}
+
+/* ═══════════ SIDE NAV ═══════════ */
+#sidenav{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:22px;align-items:center}
+.nd{width:8px;height:8px;border-radius:50%;border:1px solid rgba(0,242,255,.32);cursor:pointer;transition:all .3s;position:relative}
+.nd.on{background:var(--cb);box-shadow:0 0 14px var(--cb);border-color:var(--cb)}
+.nd::after{content:attr(data-l);position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:var(--fm);font-size:8px;color:var(--cb);white-space:nowrap;opacity:0;transition:opacity .2s;letter-spacing:.15em;text-transform:uppercase;pointer-events:none}
+.nd:hover::after{opacity:.85}
+
+/* ═══════════ STATUS BAR ═══════════ */
+#sbar{position:fixed;bottom:0;left:0;width:100%;height:26px;background:rgba(2,2,10,.97);border-top:1px solid rgba(0,242,255,.05);display:flex;align-items:center;padding:0 20px;gap:28px;z-index:500}
+.si{font-size:8.5px;letter-spacing:.15em;color:rgba(200,218,245,.45);text-transform:uppercase;display:flex;align-items:center;gap:6px}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--nm);box-shadow:0 0 6px var(--nm);animation:pulse 2.2s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ═══════════ OVERLAYS ═══════════ */
+#noise{position:fixed;inset:0;opacity:.02;pointer-events:none;z-index:3;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px}
+#scl{position:fixed;inset:0;pointer-events:none;z-index:4;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.018) 2px,rgba(0,0,0,.018) 3px)}
+
+/* ═══════════ LOADER ═══════════ */
+#ldr{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .9s}
+#ldr.hide{opacity:0;pointer-events:none}
+.lp{font-family:var(--fd);font-size:clamp(52px,9vw,88px);font-weight:900;color:var(--cb);letter-spacing:.45em;text-shadow:0 0 50px var(--cb),0 0 100px rgba(0,242,255,.3),0 0 160px rgba(0,242,255,.1);animation:glitch 5s infinite}
+@keyframes glitch{0%,86%,100%{transform:none;filter:none}87%{transform:translateX(-4px);filter:hue-rotate(90deg)}89%{transform:translateX(4px)}91%{transform:none;filter:none}93%{transform:translateX(-2px);filter:brightness(2.2)}95%{transform:none;filter:none}}
+.lbw{width:300px;height:1px;background:rgba(0,242,255,.08);overflow:hidden;position:relative}
+.lb{position:absolute;height:100%;width:0;background:linear-gradient(90deg,transparent,var(--cb),var(--nm));box-shadow:0 0 12px var(--cb);transition:width .3s ease}
+.lt{font-family:var(--fd);font-size:9px;letter-spacing:.5em;color:rgba(0,242,255,.45);text-transform:uppercase}
+.lcode{font-size:10px;color:rgba(0,255,157,.3);letter-spacing:.08em}
+.l-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+.lg-cell{width:10px;height:10px;background:rgba(0,242,255,.05);border:1px solid rgba(0,242,255,.12);animation:lgf 1.5s ease-in-out infinite}
+.lg-cell:nth-child(odd){animation-delay:.2s}
+@keyframes lgf{0%,100%{background:rgba(0,242,255,.05)}50%{background:rgba(0,242,255,.2)}}
+
+/* ═══════════ SECTION BASE ═══════════ */
+.sec{width:100%;min-height:100vh;scroll-snap-align:start;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px 48px;overflow:hidden}
+.sec-hdr{display:flex;flex-direction:column;align-items:center;margin-bottom:40px;text-align:center}
+.sec-n{font-family:var(--fd);font-size:9px;letter-spacing:.45em;color:var(--cb);opacity:.5;text-transform:uppercase;margin-bottom:9px}
+.sec-t{font-family:var(--fd);font-size:clamp(18px,3.2vw,34px);font-weight:700;letter-spacing:.2em;color:#fff;margin-bottom:6px}
+.sec-sub{font-size:11px;letter-spacing:.18em;color:rgba(200,218,245,.62);text-transform:uppercase}
+
+/* ═══════════ TOOLTIP ═══════════ */
+.tooltip{position:fixed;z-index:700;background:rgba(0,4,18,.94);border:1px solid rgba(0,242,255,.22);backdrop-filter:blur(16px);padding:14px 18px;pointer-events:none;opacity:0;transition:opacity .18s;max-width:260px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,0 100%);font-size:9px;color:var(--dim);line-height:1.75;letter-spacing:.08em}
+.tooltip.on{opacity:1}
+.tt-title{font-family:var(--fd);font-size:10px;color:var(--cb);letter-spacing:.2em;margin-bottom:5px}
+
+/* ═══════════ VR BUTTON ═══════════ */
+#vrbtn{position:fixed;bottom:38px;right:32px;z-index:500;padding:10px 22px;background:transparent;border:1px solid rgba(0,242,255,.35);color:var(--cb);font-family:var(--fd);font-size:8px;letter-spacing:.3em;cursor:pointer;transition:all .3s;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);display:none}
+#vrbtn:hover{background:rgba(0,242,255,.08);box-shadow:var(--gcb)}
+
+/* ═══════════ FLY OVERLAY ═══════════ */
+#fly-overlay{position:fixed;inset:0;z-index:900;background:#000;opacity:0;pointer-events:none}
+
+/* ═══════════ RESPONSIVE ═══════════ */
+@media(max-width:640px){
+  .gstats{gap:22px;flex-wrap:wrap;justify-content:center}
+  #sidenav{right:10px}
+}
+/* [file name]: global.css (add these variables at the end if missing) */
+/* Add to :root if not already present - check first */
+:root {
+  /* ... existing variables ... */
+  
+  /* Ensure these are defined (they should be from your existing CSS) */
+  --cb: #00f2ff;
+  --nm: #00ff9d;
+  --gold: #f0c040;
+  --warn: #ff3366;
+  --purple: #b44dff;
+  --txt: #b8ccee;
+  --dim: rgba(200, 218, 245, 0.911);
+  --obs: #03030d;
+  --fd: 'Orbitron', sans-serif;
+  --fm: 'JetBrains Mono', monospace;
+}
+
+/* Ensure section 4 has proper spacing */
+#s4 {
+  min-height: 100vh;
+  padding: 80px 20px;
+}
+
+/* Fix any potential z-index issues */
+#s4 .sec-hdr {
+  z-index: 5;
+  position: relative;
+}
+/* modal-open scroll-snap lock removed — modal is now scoped inside #s2 */
+/* ── Warp flash overlay ── */
+#warp {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  background: radial-gradient(circle, #00f2ff, #000009);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease;
+}
+#warp.flash { opacity: 1; }
+
+/* ═══════════ FULL RESPONSIVE ═══════════ */
+
+/* ── Topbar ── */
+@media(max-width:720px){
+  #topbar{padding:0 16px;gap:8px}
+  .tlogo{font-size:11px;letter-spacing:.3em}
+  #tclock{display:none}
+  .ln-btn{padding:3px 8px;font-size:7.5px}
+}
+@media(max-width:400px){
+  .lang-nav{gap:3px}
+  .ln-btn{padding:3px 6px;font-size:7px;letter-spacing:.15em}
+}
+
+/* ── Status bar ── */
+@media(max-width:720px){
+  #sbar{gap:16px;padding:0 14px}
+  #sbar .si:nth-child(3){display:none}
+}
+@media(max-width:480px){
+  #sbar #sbar-loc{display:none}
+  #sbar .si:nth-child(2){display:none}
+}
+
+/* ── Side nav ── */
+@media(max-width:480px){
+  #sidenav{right:8px;gap:16px}
+  .nd{width:6px;height:6px}
+}
+
+/* ── Section header ── */
+@media(max-width:640px){
+  .sec{padding:72px 18px 36px}
+  .sec-hdr{margin-bottom:28px}
+  .sec-t{letter-spacing:.12em}
+  .sec-sub{font-size:9.5px;letter-spacing:.1em}
+}
+
+/* ── Hero / Gateway ── */
+@media(max-width:640px){
+  .gstats{gap:16px;flex-wrap:wrap;justify-content:center;margin-top:32px}
+  .gst+.gst::before{left:-12px}
+  .gbio br{display:none}
+}
+
+/* ── VR button ── */
+@media(max-width:640px){
+  #vrbtn{display:none!important}
+}
+

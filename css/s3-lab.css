@@ -1,0 +1,201 @@
+/* ═══════════════════════════════════════════════════
+   SEC 3 — INNOVATION LAB
+   Holographic Depth / Parallax Cards
+   All content visible at all times.
+   JS drives rotateX/Y tilt on hover;
+   inner layers use translateZ for depth pop.
+═══════════════════════════════════════════════════ */
+
+#s3 {
+  background: radial-gradient(ellipse at 32% 55%, rgba(0,180,90,.04) 0%, transparent 60%), var(--obs);
+}
+
+/* ── Grid — fluid columns, min 280px ── */
+.holo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 22px;
+  width: 100%;
+  max-width: 1080px;
+}
+
+/* ── Perspective wrapper ── */
+.holo-wrap { perspective: 900px; position: relative; }
+
+/* ── Card shell ── */
+.holo-card {
+  position: relative;
+  width: 100%;
+  min-height: 270px;
+  padding: 26px 24px 22px;
+  background: linear-gradient(145deg, rgba(6,12,34,.97), rgba(3,6,22,.99));
+  border: 1px solid rgba(var(--acc-rgb), .22);
+  transform-style: preserve-3d;
+  transition: transform .12s ease, box-shadow .22s ease, border-color .22s;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  box-shadow: 0 4px 28px rgba(var(--acc-rgb), .07), inset 0 0 28px rgba(var(--acc-rgb), .03);
+}
+.holo-wrap:hover .holo-card {
+  box-shadow: 0 10px 52px rgba(var(--acc-rgb), .24), 0 0 90px rgba(var(--acc-rgb), .09), inset 0 0 44px rgba(var(--acc-rgb), .05);
+  border-color: rgba(var(--acc-rgb), .48);
+}
+
+/* ── Corner accent ── */
+.hc-corner {
+  position: absolute; top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid; border-width: 0 34px 34px 0;
+  border-color: transparent rgba(var(--acc-rgb), .25) transparent transparent;
+  transition: border-color .22s;
+}
+.holo-wrap:hover .hc-corner { border-right-color: rgba(var(--acc-rgb), .6); }
+
+/* ── Shimmer sweep ── */
+.hc-shimmer {
+  position: absolute; inset: 0;
+  background: linear-gradient(108deg, transparent 28%, rgba(var(--acc-rgb), .06) 50%, transparent 72%);
+  opacity: 0; transform: translateX(-120%);
+  pointer-events: none; z-index: 0;
+}
+.holo-wrap:hover .hc-shimmer { opacity: 1; animation: hc-sweep 1.8s ease-in-out infinite; }
+@keyframes hc-sweep { 0%{transform:translateX(-130%)} 100%{transform:translateX(130%)} }
+
+/* ── Scanlines ── */
+.hc-scanline {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(var(--acc-rgb),.014) 3px,rgba(var(--acc-rgb),.014) 4px);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── Bottom pulse ── */
+.hc-pulse {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(var(--acc-rgb),1), transparent);
+  animation: hc-pwave 3.4s ease-in-out infinite; opacity: .5;
+}
+@keyframes hc-pwave { 0%,100%{opacity:.22;transform:scaleX(.4)} 50%{opacity:.75;transform:scaleX(1)} }
+
+/* ══ DEPTH LAYERS ══ */
+
+.hc-num {
+  font-family: var(--fd);
+  font-size: 9px;
+  letter-spacing: .35em;
+  color: rgba(var(--acc-rgb), .75);   /* Raised from .5 — clearly legible */
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  transform: translateZ(6px);
+  position: relative; z-index: 1;
+}
+
+.hc-ico {
+  font-size: 36px; line-height: 1; margin-bottom: 12px;
+  display: block; transform: translateZ(44px); position: relative; z-index: 2;
+  filter: drop-shadow(0 0 14px rgba(var(--acc-rgb),.5));
+  transition: filter .22s;
+}
+.holo-wrap:hover .hc-ico { filter: drop-shadow(0 0 26px rgba(var(--acc-rgb),.82)); }
+
+.hc-name {
+  font-family: var(--fd);
+  font-size: clamp(12px, 1.4vw, 14px);
+  font-weight: 700;
+  color: #ffffff;                        /* Pure white — maximum contrast */
+  letter-spacing: .1em; line-height: 1.35; margin-bottom: 12px;
+  transform: translateZ(26px); position: relative; z-index: 2;
+  text-shadow: 0 0 20px rgba(var(--acc-rgb),.35);
+  transition: text-shadow .22s;
+}
+.holo-wrap:hover .hc-name { text-shadow: 0 0 32px rgba(var(--acc-rgb),.6); }
+
+.hc-desc {
+  font-size: clamp(10.5px, 1.05vw, 11.5px); /* Was 9.5px — a full size jump */
+  color: rgba(215, 232, 255, .84);            /* Was var(--dim) at .42 — 2× brighter */
+  line-height: 1.8;
+  flex: 1; letter-spacing: .025em; margin-bottom: 18px;
+  transform: translateZ(12px); position: relative; z-index: 1;
+}
+
+/* ── Tech tags ── */
+.hc-stack {
+  display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px;
+  transform: translateZ(20px); position: relative; z-index: 2;
+}
+.hc-tag {
+  font-size: 8.5px;                  /* Was 7px — comfortably readable */
+  padding: 4px 10px;
+  background: rgba(var(--acc-rgb), .09);
+  border: 1px solid rgba(var(--acc-rgb), .3);
+  color: rgba(var(--acc-rgb), 1);    /* Full opacity accent color */
+  letter-spacing: .12em; text-transform: uppercase;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  transition: background .2s, box-shadow .2s;
+}
+.holo-wrap:hover .hc-tag {
+  background: rgba(var(--acc-rgb), .16);
+  box-shadow: 0 0 10px rgba(var(--acc-rgb), .22);
+}
+
+/* ── Footer link ── */
+.hc-footer {
+  transform: translateZ(18px); position: relative; z-index: 2; margin-top: auto;
+}
+.hc-link {
+  font-size: 9px; letter-spacing: .22em; text-transform: uppercase;
+  text-decoration: none; color: rgba(var(--acc-rgb), .8); /* Was .65 */
+  transition: color .2s, text-shadow .2s;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.hc-link span { pointer-events: none; }
+.holo-wrap:hover .hc-link {
+  color: rgba(var(--acc-rgb), 1);
+  text-shadow: 0 0 16px rgba(var(--acc-rgb), .7);
+}
+
+/* ══════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════ */
+
+/* Tablet: force 2 columns */
+@media (max-width: 960px) {
+  .holo-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .holo-card { min-height: 250px; }
+  .hc-desc { font-size: 10.5px; }
+}
+
+/* Large mobile: 2 columns, compact */
+@media (max-width: 640px) {
+  .holo-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .holo-card { min-height: 0; padding: 16px 14px 14px; }
+  /* Disable depth transforms at this size — no room to show perspective */
+  .hc-ico    { font-size: 26px; margin-bottom: 8px; transform: none; }
+  .hc-name   { font-size: 10.5px; transform: none; margin-bottom: 8px; }
+  .hc-desc   { font-size: 9.5px; line-height: 1.65; transform: none; margin-bottom: 12px; }
+  .hc-num    { font-size: 7.5px; margin-bottom: 8px; transform: none; letter-spacing: .2em; }
+  .hc-stack  { gap: 4px; margin-bottom: 12px; transform: none; }
+  .hc-tag    { font-size: 7px; padding: 3px 7px; }
+  .hc-footer { transform: none; }
+  .hc-link   { font-size: 7.5px; }
+}
+
+/* Small phones: single column */
+@media (max-width: 380px) {
+  .holo-grid { grid-template-columns: 1fr; }
+  .holo-card { padding: 18px 16px 16px; }
+  .hc-name  { font-size: 12px; }
+  .hc-desc  { font-size: 10.5px; }
+}
+
+/* Touch / no-hover: disable JS tilt, keep static glass look */
+@media (hover: none) {
+  .holo-card {
+    transform: none !important;
+    transition: box-shadow .22s;
+    border-color: rgba(var(--acc-rgb), .3) !important;
+    box-shadow: 0 6px 32px rgba(var(--acc-rgb), .1), inset 0 0 30px rgba(var(--acc-rgb), .04) !important;
+  }
+  .hc-ico,.hc-name,.hc-desc,.hc-num,.hc-stack,.hc-footer { transform: none !important; }
+}

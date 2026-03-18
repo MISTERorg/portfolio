@@ -1,0 +1,461 @@
+/* ═══════════════════════════════════════════════════
+   SEC 4 — THE NEURAL MAP
+   Tron Light-Beam Edition — matches s5 aesthetic
+   Technique: CSS @property rotating conic-gradient
+   border per card, circuit grid background, glassmorphism
+═══════════════════════════════════════════════════ */
+
+/* ── Animated border angle (same @property as s5) ── */
+@property --bn-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ─────────────────────────────────────────────────
+   SECTION BACKGROUND
+   Dual circuit grid (drifting) + cyan radial glow
+───────────────────────────────────────────────── */
+#s4 {
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(0,242,255,.05) 0%, transparent 65%),
+    var(--obs);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 24px 60px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Grid lines */
+#s4::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .32;
+  background-image:
+    linear-gradient(0deg,
+      transparent calc(100% - 1px),
+      rgba(0,242,255,.065) 100%
+    ),
+    linear-gradient(90deg,
+      transparent calc(100% - 1px),
+      rgba(0,242,255,.065) 100%
+    );
+  background-size: 56px 56px;
+  animation: s4-grid-drift 24s linear infinite;
+}
+
+/* Grid intersection dots */
+#s4::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(0,242,255,.14) 1px, transparent 1px);
+  background-size: 56px 56px;
+  animation: s4-grid-drift 24s linear infinite;
+}
+
+@keyframes s4-grid-drift {
+  from { background-position: 0 0; }
+  to   { background-position: 56px 56px; }
+}
+
+/* Section header + grid sit above the grid overlay */
+#s4 .sec-hdr,
+#s4 .bento-grid {
+  position: relative;
+  z-index: 2;
+}
+
+#s4 .sec-hdr {
+  margin-bottom: 48px;
+}
+
+/* ─────────────────────────────────────────────────
+   BENTO GRID
+───────────────────────────────────────────────── */
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  max-width: 1160px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ─────────────────────────────────────────────────
+   BEAM FRAME — the rotating conic-gradient "border"
+   --bn-color set inline by JS per card
+───────────────────────────────────────────────── */
+.bn-frame {
+  --bn-angle: 0deg;
+  --bn-color: 0,242,255;    /* overridden inline */
+  --bn-speed: 5.5s;
+
+  position: relative;
+  padding: 1.5px;           /* "border" thickness */
+
+  background: conic-gradient(
+    from var(--bn-angle),
+    rgba(var(--bn-color), .05)   0%,
+    rgba(var(--bn-color), .05)  60%,
+    rgba(var(--bn-color), .50)  72%,
+    rgba(var(--bn-color), .92)  78%,
+    rgba(255,255,255, .88)      80%,
+    rgba(var(--bn-color), .92)  82%,
+    rgba(var(--bn-color), .50)  88%,
+    rgba(var(--bn-color), .05) 100%
+  );
+
+  animation: bn-beam-spin var(--bn-speed) linear infinite;
+  transition: --bn-speed .4s;
+
+  box-shadow:
+    0 0 24px rgba(var(--bn-color), .05),
+    0 8px 40px rgba(0,0,0,.6);
+}
+
+@keyframes bn-beam-spin { to { --bn-angle: 360deg; } }
+
+/* Hover: beam accelerates, outer glow ignites */
+.bn-frame:hover {
+  --bn-speed: 1.6s;
+  box-shadow:
+    0 0 44px rgba(var(--bn-color), .22),
+    0 0 88px rgba(var(--bn-color), .08),
+    0 14px 56px rgba(0,0,0,.75);
+}
+
+/* ─────────────────────────────────────────────────
+   BENTO CARD — glassmorphic inner panel
+───────────────────────────────────────────────── */
+.bento-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 28px 24px 22px;
+  background: linear-gradient(145deg,
+    rgba(4, 10, 30, .95),
+    rgba(2,  5, 18, .98)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: background .35s;
+  /* Remove old border — frame handles it */
+  border: none;
+  border-radius: 0;
+  clip-path: none;
+}
+
+/* Top accent beam line — brightens on hover */
+.bento-card .bc-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--bn-color), .6),
+    rgba(255,255,255,.8),
+    rgba(var(--bn-color), .6),
+    transparent
+  );
+  opacity: .38;
+  transition: opacity .35s;
+  z-index: 2;
+  pointer-events: none;
+}
+.bn-frame:hover .bc-top { opacity: 1; }
+
+/* Inner "power up" shimmer on hover */
+.bento-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(165deg,
+    rgba(var(--bn-color), .045) 0%,
+    transparent 50%
+  );
+  opacity: 0;
+  transition: opacity .35s;
+  pointer-events: none;
+  z-index: 0;
+}
+.bn-frame:hover .bento-card::before { opacity: 1; }
+
+/* Scanlines overlay */
+.bento-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(var(--bn-color), .013) 2px,
+    rgba(var(--bn-color), .013) 3px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All direct card children above pseudo-elements */
+.bento-card > * { position: relative; z-index: 1; }
+
+/* ─────────────────────────────────────────────────
+   CARD HEADER
+───────────────────────────────────────────────── */
+.bento-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgba(var(--bn-color), .14);
+  transition: border-color .35s;
+}
+.bn-frame:hover .bento-header { border-color: rgba(var(--bn-color), .3); }
+
+.bento-icon {
+  font-size: 30px;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px rgba(var(--bn-color), .55));
+  transition: filter .35s, transform .3s;
+}
+.bn-frame:hover .bento-icon {
+  filter: drop-shadow(0 0 22px rgba(var(--bn-color), .9));
+  transform: scale(1.08);
+}
+
+.bento-head-text { flex: 1; }
+
+.bento-title {
+  font-family: var(--fd);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  color: #ffffff;                  /* Pure white for maximum contrast */
+  text-shadow: 0 0 12px rgba(var(--bn-color), .35);
+  line-height: 1.2;
+  margin-bottom: 5px;
+  transition: text-shadow .35s;
+}
+.bn-frame:hover .bento-title {
+  text-shadow: 0 0 24px rgba(var(--bn-color), .65);
+}
+
+.bento-prefix {
+  color: rgba(var(--bn-color), .8);
+  margin-right: 6px;
+  font-size: 11px;
+}
+
+.bento-desc {
+  font-size: 10.5px;             /* Was missing entirely — added */
+  color: rgba(210,228,252,.68);
+  letter-spacing: .06em;
+  line-height: 1.5;
+}
+
+.bento-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 7px;
+  padding: 2px 9px;
+  background: rgba(var(--bn-color), .08);
+  border: 1px solid rgba(var(--bn-color), .22);
+  font-size: 8px;
+  letter-spacing: .14em;
+  color: rgba(var(--bn-color), .9);
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  transition: background .25s, border-color .25s;
+}
+.bn-frame:hover .bento-badge {
+  background: rgba(var(--bn-color), .15);
+  border-color: rgba(var(--bn-color), .45);
+}
+
+/* ─────────────────────────────────────────────────
+   TECH TAGS  — the main readability upgrade
+───────────────────────────────────────────────── */
+.tech-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  flex: 1;
+  margin-bottom: 16px;
+  align-content: flex-start;
+}
+
+.tech-tag {
+  font-family: var(--fm);
+  font-size: 10.5px;               /* Was 9px — now clearly legible */
+  padding: 6px 13px;               /* More breathing room */
+  background: rgba(0, 8, 24, .72);
+  border: 1px solid rgba(var(--bn-color), .28);
+  color: rgba(220,236,255, .88);   /* Was var(--txt) at ~.42 — much brighter */
+  letter-spacing: .06em;
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+  transition: background .22s, border-color .22s, color .22s, transform .18s, box-shadow .22s;
+}
+
+/* Shimmer swipe on tag hover */
+.tech-tag::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--bn-color), .12),
+    transparent
+  );
+  transform: translateX(-120%);
+  transition: transform .45s;
+}
+
+.tech-tag:hover {
+  background: rgba(var(--bn-color), .12);
+  border-color: rgba(var(--bn-color), .65);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow:
+    0 4px 18px rgba(0,0,0,.4),
+    0 0 14px rgba(var(--bn-color), .18);
+}
+.tech-tag:hover::before { transform: translateX(120%); }
+
+/* ─────────────────────────────────────────────────
+   CARD FOOTER
+───────────────────────────────────────────────── */
+.bento-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(var(--bn-color), .1);
+  margin-top: auto;
+  transition: border-color .35s;
+}
+.bn-frame:hover .bento-footer { border-color: rgba(var(--bn-color), .24); }
+
+.pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nm);
+  box-shadow: 0 0 8px var(--nm);
+  animation: bn-pulse 2.2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes bn-pulse {
+  0%,100% { opacity: .4; transform: scale(1); }
+  50%      { opacity: 1;  transform: scale(1.25); }
+}
+
+.footer-text {
+  font-size: 8px;
+  letter-spacing: .2em;
+  color: rgba(200,218,245,.45);    /* Was .3 — more visible */
+  text-transform: uppercase;
+  flex: 1;
+  transition: color .35s;
+}
+.bn-frame:hover .footer-text { color: rgba(200,218,245,.7); }
+
+.footer-count {
+  font-family: var(--fd);
+  font-size: 9px;
+  letter-spacing: .1em;
+  color: rgba(var(--bn-color), .8);
+  transition: color .35s, text-shadow .35s;
+}
+.bn-frame:hover .footer-count {
+  color: rgba(var(--bn-color), 1);
+  text-shadow: 0 0 12px rgba(var(--bn-color), .6);
+}
+
+/* ─────────────────────────────────────────────────
+   AUTOMATION CARD — radial pulse background effect
+───────────────────────────────────────────────── */
+.bento-card.automation .bc-pulse-bg {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle at center, rgba(180,77,255,.1) 0%, transparent 68%);
+  transform: translate(-50%,-50%) scale(.8);
+  opacity: 0;
+  animation: bc-auto-pulse 3.2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes bc-auto-pulse {
+  0%,100% { opacity: 0;   transform: translate(-50%,-50%) scale(.8); }
+  50%      { opacity: .55; transform: translate(-50%,-50%) scale(1.6); }
+}
+
+/* ─────────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  #s4 { padding: 68px 14px 48px; }
+
+  .bento-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .bento-card { padding: 22px 18px 18px; }
+  .bento-title { font-size: 12px; }
+  .bento-desc  { font-size: 9.5px; }
+  .tech-tag    { font-size: 10px; padding: 5px 11px; }
+
+  /* Static border on mobile — no @property animation needed */
+  .bn-frame {
+    background: linear-gradient(145deg,
+      rgba(var(--bn-color), .28),
+      rgba(var(--bn-color), .08)
+    );
+    animation: none;
+  }
+  .bn-frame:hover {
+    box-shadow: 0 6px 28px rgba(var(--bn-color), .12);
+  }
+}
+
+/* Graceful @property fallback */
+@supports not (background: conic-gradient(from 1deg, red, blue)) {
+  .bn-frame {
+    background: linear-gradient(145deg,
+      rgba(var(--bn-color), .3),
+      rgba(var(--bn-color), .08)
+    );
+    animation: bn-fallback 5s linear infinite;
+  }
+  @keyframes bn-fallback {
+    0%   { box-shadow: 2px 0 0 rgba(var(--bn-color),.8), 0 0 20px rgba(var(--bn-color),.1); }
+    25%  { box-shadow: 0 2px 0 rgba(var(--bn-color),.8), 0 0 20px rgba(var(--bn-color),.1); }
+    50%  { box-shadow: -2px 0 0 rgba(var(--bn-color),.8), 0 0 20px rgba(var(--bn-color),.1); }
+    75%  { box-shadow: 0 -2px 0 rgba(var(--bn-color),.8), 0 0 20px rgba(var(--bn-color),.1); }
+    100% { box-shadow: 2px 0 0 rgba(var(--bn-color),.8), 0 0 20px rgba(var(--bn-color),.1); }
+  }
+}

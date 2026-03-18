@@ -1,0 +1,643 @@
+/* ═══════════════════════════════════════════════════
+   SEC 5 — THE ARCHIVE
+   Tron Light-Beam Edition
+   Technique: CSS @property rotating conic-gradient border
+   + glassmorphism cards + circuit grid background
+═══════════════════════════════════════════════════ */
+
+/* ── Animated border angle — requires @property ── */
+@property --beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Section background: obsidian + circuit grid + gold radial ── */
+#s5 {
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(240,192,64,.035) 0%, transparent 55%),
+    var(--obs);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Circuit grid overlay — subtle, behind all content */
+#s5::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .28;
+  background-image:
+    /* Horizontal lines */
+    linear-gradient(0deg,
+      transparent calc(100% - 1px),
+      rgba(0,242,255,.07) 100%
+    ),
+    /* Vertical lines */
+    linear-gradient(90deg,
+      transparent calc(100% - 1px),
+      rgba(0,242,255,.07) 100%
+    );
+  background-size: 60px 60px;
+  animation: grid-drift 28s linear infinite;
+}
+
+@keyframes grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to   { background-position: 0 60px, 60px 0; }
+}
+
+/* Corner circuit nodes at grid intersections */
+#s5::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: radial-gradient(circle, rgba(0,242,255,.12) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: grid-drift 28s linear infinite;
+}
+
+/* Ensure all section content sits above the grid */
+#s5 .sec-hdr,
+#s5 .arc5-grid {
+  position: relative;
+  z-index: 2;
+}
+
+/* ═══════════════════════════════════
+   3-COLUMN CARD GRID
+═══════════════════════════════════ */
+.arc5-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  width: 100%;
+  max-width: 1060px;
+  align-items: stretch;
+}
+
+/* ── Frame — provides the rotating beam border ── */
+.arc5-frame {
+  --beam-angle: 0deg;
+  --beam-color: 0,242,255;       /* default cyan, overridden per card */
+  --beam-speed: 5s;
+
+  position: relative;
+  padding: 1.5px;               /* the "border thickness" */
+  border-radius: 2px;
+
+  /* Rotating conic-gradient IS the border */
+  background: conic-gradient(
+    from var(--beam-angle),
+    rgba(var(--beam-color), .06)   0%,
+    rgba(var(--beam-color), .06)  62%,
+    rgba(var(--beam-color), .55)  74%,
+    rgba(var(--beam-color), .95)  80%,
+    rgba(255,255,255, .90)        82%,
+    rgba(var(--beam-color), .95)  84%,
+    rgba(var(--beam-color), .55)  90%,
+    rgba(var(--beam-color), .06) 100%
+  );
+
+  animation: beam-spin var(--beam-speed) linear infinite;
+  transition: --beam-speed .4s;
+
+  /* Outer glow at rest */
+  box-shadow:
+    0 0 28px rgba(var(--beam-color), .06),
+    0 8px 48px rgba(0,0,0,.55);
+}
+
+@keyframes beam-spin { to { --beam-angle: 360deg; } }
+
+/* Hover state: beam speeds up + outer glow intensifies */
+.arc5-frame:hover {
+  --beam-speed: 1.8s;
+  box-shadow:
+    0 0 48px rgba(var(--beam-color), .22),
+    0 0 100px rgba(var(--beam-color), .08),
+    0 12px 60px rgba(0,0,0,.7);
+}
+
+/* ── Card — the glassmorphic content panel ── */
+.arc5-card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 32px 28px 28px;
+  background: linear-gradient(145deg,
+    rgba(4, 10, 30, .94),
+    rgba(2,  5, 18, .98)
+  );
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  /* Power-up transition */
+  transition: background .35s;
+}
+
+/* Inner shimmer on hover (top-to-bottom) */
+.arc5-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg,
+    rgba(var(--beam-color), .04) 0%,
+    transparent 45%
+  );
+  opacity: 0;
+  transition: opacity .35s;
+  pointer-events: none;
+  z-index: 0;
+}
+.arc5-frame:hover .arc5-card::before { opacity: 1; }
+
+/* Inner scanlines */
+.arc5-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(var(--beam-color), .012) 2px,
+    rgba(var(--beam-color), .012) 3px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* All card children sit above pseudo-elements */
+.arc5-card > * { position: relative; z-index: 1; }
+
+/* ── Top accent line (always visible, brightens on hover) ── */
+.arc5-card-top {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(var(--beam-color), .6),
+    rgba(255,255,255,.8),
+    rgba(var(--beam-color), .6),
+    transparent
+  );
+  opacity: .4;
+  transition: opacity .35s;
+  z-index: 2;
+}
+.arc5-frame:hover .arc5-card-top { opacity: 1; }
+
+/* ── Category label ── */
+.arc5-cat {
+  font-family: var(--fd);
+  font-size: 8.5px;
+  letter-spacing: .4em;
+  color: rgba(var(--beam-color), .75);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  transition: color .35s;
+}
+.arc5-frame:hover .arc5-cat { color: rgba(var(--beam-color), 1); }
+
+/* ── Icon ── */
+.arc5-ico {
+  font-size: 42px;
+  line-height: 1;
+  display: block;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 12px rgba(var(--beam-color), .4));
+  transition: filter .35s;
+}
+.arc5-frame:hover .arc5-ico {
+  filter: drop-shadow(0 0 24px rgba(var(--beam-color), .8));
+}
+
+/* ── Section label inside card ── */
+.arc5-label {
+  font-family: var(--fd);
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: rgba(200,218,245,.5);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+/* ── Degree / credential title ── */
+.arc5-deg {
+  font-family: var(--fd);
+  font-size: clamp(11px, 1.3vw, 13px);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: .08em;
+  line-height: 1.35;
+  margin-bottom: 4px;
+  text-shadow: 0 0 16px rgba(var(--beam-color), .2);
+  transition: text-shadow .35s;
+}
+.arc5-frame:hover .arc5-deg {
+  text-shadow: 0 0 28px rgba(var(--beam-color), .45);
+}
+
+/* ── Institution ── */
+.arc5-inst {
+  font-size: 10px;
+  color: rgba(200,218,245,.62);
+  letter-spacing: .1em;
+  margin-bottom: 10px;
+}
+
+/* ── CGPA block ── */
+.arc5-gpa {
+  font-family: var(--fd);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+  display: block;
+}
+.arc5-gpa.cyan {
+  color: var(--cb);
+  animation: arc5-gpa-cyan 3s ease-in-out infinite;
+}
+.arc5-gpa.mint {
+  color: var(--nm);
+  animation: arc5-gpa-mint 3.6s ease-in-out infinite;
+}
+@keyframes arc5-gpa-cyan {
+  0%,100% { text-shadow: 0 0 12px var(--cb), 0 0 24px rgba(0,242,255,.3); }
+  50%      { text-shadow: 0 0 28px var(--cb), 0 0 55px rgba(0,242,255,.6), 0 0 80px rgba(0,242,255,.2); }
+}
+@keyframes arc5-gpa-mint {
+  0%,100% { text-shadow: 0 0 10px var(--nm), 0 0 20px rgba(0,255,157,.3); }
+  50%      { text-shadow: 0 0 22px var(--nm), 0 0 44px rgba(0,255,157,.5); }
+}
+
+/* ── Divider between degree blocks ── */
+.arc5-div {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0,242,255,.12),
+    transparent
+  );
+  margin: 18px 0;
+}
+
+/* ── Scholarship badge ── */
+.arc5-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  background: rgba(240,192,64,.08);
+  border: 1px solid rgba(240,192,64,.35);
+  font-family: var(--fd);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  color: var(--gold);
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+  animation: badge-aura 2.8s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+.arc5-badge::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -160%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(240,192,64,.5),
+    transparent
+  );
+  transform: skewX(-20deg);
+  animation: badge-sweep 4.5s ease-in-out infinite;
+}
+@keyframes badge-aura {
+  0%,100% { box-shadow: 0 0 8px rgba(240,192,64,.18); }
+  50%      { box-shadow: 0 0 20px rgba(240,192,64,.45), inset 0 0 10px rgba(240,192,64,.12); }
+}
+@keyframes badge-sweep {
+  0%,20%  { left: -160%; }
+  80%,100%{ left: 200%;  }
+}
+
+/* ═══════════════════════
+   CARD 2 — CYBEROPS SHIELD
+═══════════════════════ */
+.arc5-shield-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 22px;
+}
+.arc5-shield {
+  filter: drop-shadow(0 0 16px rgba(240,192,64,.5));
+  animation: shield-pulse 4s ease-in-out infinite;
+}
+@keyframes shield-pulse {
+  0%,100% {
+    filter: drop-shadow(0 0 10px rgba(240,192,64,.35));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 28px rgba(240,192,64,.8))
+      drop-shadow(0 0 60px rgba(240,192,64,.3));
+  }
+}
+.arc5-frame:hover .arc5-shield {
+  animation: shield-pulse-fast 1.2s ease-in-out infinite;
+}
+@keyframes shield-pulse-fast {
+  0%,100% { filter: drop-shadow(0 0 18px rgba(240,192,64,.6)); }
+  50%      {
+    filter:
+      drop-shadow(0 0 38px rgba(240,192,64,1))
+      drop-shadow(0 0 80px rgba(240,192,64,.45));
+  }
+}
+
+/* Shield title */
+.arc5-cert-title {
+  font-family: var(--fd);
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: .15em;
+  text-align: center;
+  margin-bottom: 6px;
+  text-shadow: 0 0 22px rgba(240,192,64,.35);
+  transition: text-shadow .35s;
+}
+.arc5-frame:hover .arc5-cert-title {
+  text-shadow: 0 0 40px rgba(240,192,64,.7);
+}
+
+.arc5-issuer {
+  font-size: 11px;
+  color: rgba(200,218,245,.7);
+  letter-spacing: .18em;
+  text-align: center;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+/* ── "Active" status pill ── */
+.arc5-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.arc5-status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--nm);
+  box-shadow: 0 0 8px var(--nm);
+  animation: status-blink 2s ease-in-out infinite;
+}
+@keyframes status-blink {
+  0%,100% { opacity: .4; }
+  50%      { opacity: 1; }
+}
+.arc5-status-txt {
+  font-family: var(--fd);
+  font-size: 8px;
+  letter-spacing: .3em;
+  color: var(--nm);
+  text-transform: uppercase;
+}
+
+/* ── Verify button (the only clickable CTA in the section) ── */
+.arc5-verify-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 20px;
+  background: rgba(240,192,64,.06);
+  border: 1px solid rgba(240,192,64,.35);
+  color: var(--gold);
+  font-family: var(--fd);
+  font-size: 8.5px;
+  letter-spacing: .28em;
+  text-decoration: none;
+  text-transform: uppercase;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background .25s, border-color .25s, box-shadow .25s;
+  margin-top: auto;
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+.arc5-verify-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(240,192,64,.0);
+  transition: background .25s;
+}
+.arc5-verify-btn:hover {
+  background: rgba(240,192,64,.14);
+  border-color: rgba(240,192,64,.7);
+  box-shadow: 0 0 28px rgba(240,192,64,.3), inset 0 0 16px rgba(240,192,64,.08);
+  color: #fff;
+}
+.arc5-verify-btn svg {
+  flex-shrink: 0;
+  transition: transform .2s;
+}
+.arc5-verify-btn:hover svg { transform: translate(2px,-2px); }
+
+/* ═══════════════════════
+   CARD 3 — LANGUAGES
+═══════════════════════ */
+.arc5-lang-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 8px;
+  flex: 1;
+}
+
+.arc5-lang-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 12px 16px;
+  background: rgba(0,0,0,.3);
+  border: 1px solid rgba(var(--l-rgb), .18);
+  position: relative;
+  overflow: hidden;
+  transition: border-color .28s, box-shadow .28s, background .28s;
+}
+.arc5-lang-item::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(var(--l-rgb),1), transparent);
+  opacity: .45;
+  transition: opacity .28s;
+}
+.arc5-lang-item:hover {
+  border-color: rgba(var(--l-rgb), .5);
+  box-shadow: 0 0 28px rgba(var(--l-rgb), .12);
+  background: rgba(var(--l-rgb), .04);
+}
+.arc5-lang-item:hover::before { opacity: .9; }
+
+.arc5-lang-lvl {
+  font-family: var(--fd);
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: rgb(var(--l-rgb));
+  text-shadow: 0 0 16px rgba(var(--l-rgb), .5);
+  transition: text-shadow .28s;
+}
+.arc5-lang-item:hover .arc5-lang-lvl {
+  text-shadow: 0 0 32px rgba(var(--l-rgb), .9);
+}
+.arc5-lang-name {
+  font-size: 9px;
+  letter-spacing: .22em;
+  color: rgba(200,218,245,.65);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.arc5-lang-cefr {
+  font-size: 8px;
+  letter-spacing: .15em;
+  color: rgba(var(--l-rgb), .6);
+  text-transform: uppercase;
+}
+
+/* ── Card subtitle ── */
+.arc5-sub {
+  font-size: 10px;
+  color: rgba(200,218,245,.55);
+  letter-spacing: .12em;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════
+   RESPONSIVE
+═══════════════════════════ */
+@media (max-width: 960px) {
+  .arc5-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  /* CyberOps card spans full width on tablet */
+  .arc5-frame:nth-child(2) {
+    grid-column: 1 / -1;
+    max-width: 520px;
+    justify-self: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .arc5-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .arc5-frame:nth-child(2) {
+    grid-column: auto;
+    max-width: 100%;
+  }
+  .arc5-card { padding: 24px 20px 22px; }
+  .arc5-gpa  { font-size: 22px; }
+  .arc5-cert-title { font-size: 16px; }
+  .arc5-lang-lvl   { font-size: 26px; }
+  /* Disable beam on mobile — just show static border */
+  .arc5-frame {
+    background: rgba(var(--beam-color), .22);
+    animation: none;
+  }
+  .arc5-frame:hover { box-shadow: 0 6px 32px rgba(var(--beam-color), .12); }
+}
+
+/* @property unsupported fallback — graceful degradation */
+@supports not (background: conic-gradient(from 1deg, red, blue)) {
+  .arc5-frame {
+    background: linear-gradient(145deg,
+      rgba(var(--beam-color), .25),
+      rgba(var(--beam-color), .08)
+    );
+    animation: beam-spin-fallback 5s linear infinite;
+  }
+  @keyframes beam-spin-fallback {
+    0%   { box-shadow: 0 0 18px rgba(var(--beam-color),.1), 2px 0 0 rgba(var(--beam-color),.8); }
+    25%  { box-shadow: 0 0 18px rgba(var(--beam-color),.1), 0 2px 0 rgba(var(--beam-color),.8); }
+    50%  { box-shadow: 0 0 18px rgba(var(--beam-color),.1), -2px 0 0 rgba(var(--beam-color),.8); }
+    75%  { box-shadow: 0 0 18px rgba(var(--beam-color),.1), 0 -2px 0 rgba(var(--beam-color),.8); }
+    100% { box-shadow: 0 0 18px rgba(var(--beam-color),.1), 2px 0 0 rgba(var(--beam-color),.8); }
+  }
+}
+
+/* Preserve the old classes used elsewhere in the site (cred-card etc.)
+   so the archive section's timeline/vault keep working if still present */
+.cred-card{background:linear-gradient(145deg,rgba(4,10,30,.82),rgba(2,6,20,.92));border:1px solid rgba(0,242,255,.1);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:30px;position:relative;overflow:hidden;transition:transform .36s,box-shadow .36s;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,0 100%)}
+.cred-card:hover{transform:translateY(-6px);box-shadow:0 22px 64px rgba(0,242,255,.07),0 0 0 1px rgba(0,242,255,.14)}
+.cred-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cb),transparent);opacity:.45}
+.cred-card::after{content:'';position:absolute;inset:0;background:linear-gradient(145deg,transparent 72%,rgba(0,242,255,.025) 100%);pointer-events:none}
+.cred-ico{font-size:38px;margin-bottom:18px;display:block}
+.cred-type{font-size:8px;letter-spacing:.32em;color:var(--cb);text-transform:uppercase;margin-bottom:7px;opacity:.55}
+.cred-name{font-family:var(--fd);font-size:clamp(11px,1.8vw,14px);font-weight:700;color:#fff;letter-spacing:.1em;margin-bottom:5px;line-height:1.4}
+.cred-inst{font-size:9px;color:var(--dim);letter-spacing:.1em;margin-bottom:14px}
+.cred-cgpa{font-family:var(--fd);font-size:26px;font-weight:700;color:var(--cb);text-shadow:var(--gcb);margin-bottom:10px;display:block}
+.ci-tag{display:inline-block;padding:3px 9px;background:rgba(0,242,255,.055);border:1px solid rgba(0,242,255,.17);font-size:7px;letter-spacing:.12em;color:var(--cb);margin:2px 2px 0 0;text-transform:uppercase}
+.shield-card{border-color:rgba(240,192,64,.2)}
+.shield-card::before{background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.shield-ico{display:flex;justify-content:center;margin-bottom:18px}
+.shield-svg{filter:drop-shadow(0 0 14px rgba(240,192,64,.45));animation:shieldglow 3.8s ease-in-out infinite}
+@keyframes shieldglow{0%,100%{filter:drop-shadow(0 0 8px rgba(240,192,64,.3))}50%{filter:drop-shadow(0 0 28px rgba(240,192,64,.75)) drop-shadow(0 0 56px rgba(240,192,64,.25))}}
+.cert-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;background:rgba(240,192,64,.06);border:1px solid rgba(240,192,64,.25);font-size:8px;letter-spacing:.15em;color:var(--gold);text-transform:uppercase;margin-top:10px}
+.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.lang-item .lang-level{font-family:var(--fd);font-size:24px;font-weight:700;line-height:1}
+.lang-item .lang-name{font-size:9px;color:var(--dim);letter-spacing:.1em;margin-top:3px}
+.vault-container{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;max-width:1100px;width:100%;margin:0 auto}
+.vault-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.vh-icon{font-size:14px;filter:drop-shadow(0 0 8px rgba(0,242,255,0.5))}
+.vh-text{font-family:var(--fd);font-size:11px;font-weight:700;letter-spacing:0.25em;color:#fff}
+.vh-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(0,242,255,0.3),transparent)}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:22px;max-width:1020px;width:100%}
+.arch-grid.single-col{grid-template-columns:1fr;gap:16px}
+.cyber-timeline{position:relative;padding-left:24px;display:flex;flex-direction:column;gap:20px}
+.cyber-timeline::before{content:'';position:absolute;top:8px;bottom:0;left:3px;width:1px;background:linear-gradient(180deg,var(--cb) 0%,rgba(0,242,255,0.1) 100%);box-shadow:0 0 10px rgba(0,242,255,0.5)}
+.tl-item{position:relative}
+.tl-dot{position:absolute;top:14px;left:-24px;width:7px;height:7px;background:var(--cb);border-radius:50%;box-shadow:0 0 12px var(--cb);z-index:2;transition:all 0.3s}
+.tl-item:hover .tl-dot{transform:scale(1.5);background:#fff}
+.tl-content.cred-card{padding:20px 24px}
+.tl-date{font-family:var(--fd);font-size:8px;color:var(--cb);letter-spacing:0.2em;margin-bottom:8px;text-transform:uppercase}
+.tl-desc{font-size:9px;color:rgba(184,204,238,0.6);line-height:1.6;margin-top:10px;margin-bottom:12px}
+.tl-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tl-collapsed{padding:12px 24px!important;opacity:0.6}
+.tl-collapsed:hover{opacity:1}
+.award-tag{position:relative;overflow:hidden;border-color:var(--gold)!important;color:var(--gold)!important;background:rgba(240,192,64,0.08)!important;font-weight:900!important;box-shadow:0 0 10px rgba(240,192,64,0.2);animation:goldAura 2.5s ease-in-out infinite;z-index:1;font-size:10px!important;padding:6px 14px!important;letter-spacing:0.15em!important}
+.award-tag::after{content:'';position:absolute;top:0;left:-150%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(240,192,64,0.6),transparent);transform:skewX(-20deg);animation:sweepLight 4s infinite;z-index:-1}
+@keyframes goldAura{0%,100%{box-shadow:0 0 8px rgba(240,192,64,0.2)}50%{box-shadow:0 0 18px rgba(240,192,64,0.5),inset 0 0 8px rgba(240,192,64,0.2)}}
+@keyframes sweepLight{0%,20%{left:-150%}80%,100%{left:200%}}
+.gpa-flare-cyan{animation:dataFlareCyan 3s ease-in-out infinite}
+.gpa-flare-mint{animation:dataFlareMint 3.5s ease-in-out infinite;color:var(--nm)}
+@keyframes dataFlareCyan{0%,100%{text-shadow:0 0 10px var(--cb);filter:brightness(1)}50%{text-shadow:0 0 25px var(--cb),0 0 45px rgba(0,242,255,0.6);filter:brightness(1.2)}}
+@keyframes dataFlareMint{0%,100%{text-shadow:0 0 8px var(--nm);filter:brightness(1)}50%{text-shadow:0 0 20px var(--nm),0 0 35px rgba(0,255,157,0.5);filter:brightness(1.2)}}
+@media(max-width:900px){.vault-container{grid-template-columns:1fr;gap:50px}}
+@media(max-width:640px){.arch-grid{grid-template-columns:1fr}}

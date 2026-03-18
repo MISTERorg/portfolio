@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ELAD ANEDO DAUDET — DevOps · AIOps · Digital Nomad</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,700;1,300&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+  <!-- ── Stylesheets ── -->
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/s1-gateway.css">
+  <link rel="stylesheet" href="css/s2-globe.css">
+  <link rel="stylesheet" href="css/s3-lab.css">
+  <link rel="stylesheet" href="css/s4-neural.css">
+  <link rel="stylesheet" href="css/s5-archive.css">
+  <link rel="stylesheet" href="css/s6-terminal.css">
+</head>
+
+<body>
+
+  <!-- ══ Cursor ══ -->
+  <div id="cur"></div>
+  <div id="curd"></div>
+
+  <!-- ══ Screen overlays ══ -->
+  <div id="noise"></div>
+  <div id="scl"></div>
+
+  <!-- ══ Fly-through overlay ══ -->
+  <div id="fly-overlay"></div>
+
+  <!-- ══ Tooltip ══ -->
+  <div class="tooltip" id="tip">
+    <div class="tt-title" id="tt-title"></div>
+    <div id="tt-body"></div>
+  </div>
+
+  <!-- ══ City / Company Modal ══ -->
+  <div id="city-overlay">
+    <div class="city-modal" id="cityModal">
+
+      <div class="cm-header">
+        <div class="cm-location-row">
+          <span class="cm-pin">📍</span>
+          <div class="cm-city" id="cm-city"></div>
+        </div>
+        <button class="cm-close" onclick="closeCity()">✕ CLOSE</button>
+      </div>
+
+      <div class="cm-identity">
+        <div class="cm-logo" id="cm-logo"></div>
+        <div class="cm-id-text">
+          <div class="cm-company-name" id="cm-company-name"></div>
+          <div class="cm-industry-row">
+            <span class="cm-industry" id="cm-industry"></span>
+            <span class="cm-status-dot"></span>
+            <span class="cm-status-text" id="cm-status-text">Active</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cm-role-block">
+        <div class="cm-role-label">Position Held</div>
+        <div class="cm-role" id="cm-role"></div>
+      </div>
+
+      <div class="cm-metrics">
+        <div class="cm-metric">
+          <div class="cm-metric-val" id="cm-m1-val"></div>
+          <div class="cm-metric-lbl" id="cm-m1-lbl"></div>
+        </div>
+        <div class="cm-metric">
+          <div class="cm-metric-val" id="cm-m2-val"></div>
+          <div class="cm-metric-lbl" id="cm-m2-lbl"></div>
+        </div>
+        <div class="cm-metric">
+          <div class="cm-metric-val" id="cm-m3-val"></div>
+          <div class="cm-metric-lbl" id="cm-m3-lbl"></div>
+        </div>
+      </div>
+
+      <div class="cm-impact-block">
+        <div class="cm-section-label">Key Impact</div>
+        <div class="cm-impact-list" id="cm-impact"></div>
+      </div>
+
+      <div class="cm-detail-block">
+        <div class="cm-section-label">Overview</div>
+        <div class="cm-detail" id="cm-detail"></div>
+      </div>
+
+      <div class="cm-tags-block">
+        <div class="cm-section-label">Tech Stack</div>
+        <div class="cm-tags" id="cm-tags"></div>
+      </div>
+
+      <div class="cm-footer">
+        <button class="cm-btn cm-btn-primary" id="cm-btn-primary">→ VIEW PROFILE</button>
+        <button class="cm-btn cm-btn-secondary" onclick="closeCity()">← CLOSE</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ Loader ══ -->
+  <div id="ldr">
+    <div class="lp" id="lp">EAD</div>
+    <div class="lbw">
+      <div class="lb" id="lb"></div>
+    </div>
+    <div class="lt" id="ltext">INITIALIZING SYSTEM</div>
+    <div class="lcode" id="lcode">&gt; booting neural interface...</div>
+    <div class="l-grid" id="lgrid">
+      <div class="lg-cell"></div>
+      <div class="lg-cell"></div>
+      <div class="lg-cell"></div>
+      <div class="lg-cell"></div>
+      <div class="lg-cell"></div>
+      <div class="lg-cell"></div>
+    </div>
+  </div>
+
+  <!-- ══ Top Bar ══ -->
+  <div id="topbar">
+    <div class="tlogo">EAD</div>
+    <div class="lang-nav">
+      <button class="ln-btn active" onclick="setGlobalLang('en')">EN</button>
+      <button class="ln-btn" onclick="setGlobalLang('fr')">FR</button>
+      <button class="ln-btn" onclick="setGlobalLang('es')">ES</button>
+      <button class="ln-btn" onclick="setGlobalLang('ja')">JA</button>
+    </div>
+    <div id="tclock">--:--:--</div>
+  </div>
+
+  <!-- ══ Side Navigation ══ -->
+  <div id="sidenav">
+    <div class="nd on" data-i="0" data-l="Gateway" onclick="gotoSec(0)"></div>
+    <div class="nd" data-i="1" data-l="Nexus" onclick="gotoSec(1)"></div>
+    <div class="nd" data-i="2" data-l="Lab" onclick="gotoSec(2)"></div>
+    <div class="nd" data-i="3" data-l="Neural" onclick="gotoSec(3)"></div>
+    <div class="nd" data-i="4" data-l="Archive" onclick="gotoSec(4)"></div>
+    <div class="nd" data-i="5" data-l="Terminal" onclick="gotoSec(5)"></div>
+  </div>
+
+  <!-- ══ Status Bar ══ -->
+  <div id="sbar">
+    <div class="si">
+      <div class="sdot"></div><span data-i18n="sbar-online">SYSTEM ONLINE</span>
+    </div>
+    <div class="si" data-i18n="sbar-exp">6+ YRS EXPERIENCE</div>
+    <div class="si">ENG · FRA · ESP · JPN</div>
+    <div class="si" style="margin-left:auto" id="sbar-loc" data-i18n="sbar-nexus">GLOBAL NEXUS ACTIVE</div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 1 — GATEWAY
+═══════════════════════════════════════════════ -->
+  <section class="sec" id="s1">
+    <canvas id="hero-canvas"></canvas>
+
+    <div class="gwrap">
+      <!-- 3D Monogram -->
+      <div class="emon-3d" id="emon">
+        <div class="emon-glow"></div>
+        <div class="emon-ring"></div>
+        <div class="emon-ring2"></div>
+        <div class="emon-inner">
+          <div class="emon-face">
+            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 14H78M22 14V86M22 14V14M22 50H68M22 86H78M22 86V86" stroke="#00f2ff" stroke-width="7"
+                stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="360" stroke-dashoffset="360">
+                <animate attributeName="stroke-dashoffset" from="360" to="0" dur="2s" begin="1s" fill="freeze" />
+              </path>
+              <circle cx="50" cy="50" r="42" stroke="rgba(0,242,255,0.12)" stroke-width="1" stroke-dasharray="5 5" />
+              <circle cx="50" cy="50" r="34" stroke="rgba(0,242,255,0.06)" stroke-width="1" />
+              <circle cx="50" cy="50" r="46" stroke="rgba(0,255,157,0.04)" stroke-width="1" stroke-dasharray="2 8" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="gname">ELAD ANEDO DAUDET</div>
+      <div class="gtitle" data-i18n="hero-title">DevOps &amp; AIOps Engineer &nbsp;·&nbsp; AI-Powered Automation Expert
+      </div>
+      <div class="gbio" data-i18n="hero-bio">Detail-oriented Digital Nomad with 6+ years of success driving change
+        through<br>managing complex programs and AI-powered automation</div>
+
+      <button class="ebtn" onclick="flyThrough()">
+        <span class="btn-scan"></span>
+        <span data-i18n="hero-btn">▶ &nbsp;ENTER THE NETWORK</span>
+      </button>
+
+      <div class="gstats">
+        <div class="gst">
+          <div class="gstn" id="cnt1">0</div>
+          <div class="gstl" data-i18n="stat-years">Years Active</div>
+        </div>
+        <div class="gst">
+          <div class="gstn" id="cnt2">0</div>
+          <div class="gstl" data-i18n="stat-cities">Cities Deployed</div>
+        </div>
+        <div class="gst">
+          <div class="gstn" id="cnt3">0</div>
+          <div class="gstl" data-i18n="stat-certs">Certifications</div>
+        </div>
+        <div class="gst">
+          <div class="gstn" id="cnt4">0</div>
+          <div class="gstl" data-i18n="stat-langs">Languages</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrl"><span data-i18n="scroll-hint">Scroll</span>
+      <div class="sarr"></div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 2 — GLOBAL NEXUS
+═══════════════════════════════════════════════ -->
+  <section class="sec" id="s2">
+    <div class="sec-hdr">
+      <div class="sec-n">Distributed Teams · Infrastructure Scaling · International Deployments</div>
+      <div class="sec-t" data-i18n="s2-title">GLOBAL OPERATIONS
+      </div>
+      <div class="sec-sub" data-i18n="s2-sub">Interactive 3D Globe · Click any city node to explore</div>
+    </div>
+    <div id="globe-wrap">
+      <canvas id="globeCanvas"></canvas>
+    </div>
+    <div class="globe-hint" data-i18n="globe-hint">DRAG TO ROTATE &nbsp;·&nbsp; CLICK NODES TO EXPLORE</div>
+    <!-- City names panel — populated by s2-globe.js -->
+    <div id="city-list-panel"></div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 3 — INNOVATION LAB
+═══════════════════════════════════════════════ -->
+  <section class="sec" id="s3">
+    <div class="sec-hdr">
+      <div class="sec-n">Enterprise Level project can't be given because they are confidential(NDA)</div>
+      <div class="sec-t" data-i18n="s3-title">PERSONAL PROJECTS
+      </div>
+      <div class="sec-sub" data-i18n="s3-sub">System Design · AI-Powered Automation · Production Deployments</div>
+    </div>
+    <div class="holo-grid">
+
+
+      <!-- 01 · ERP Sync Engine — accent: cyan -->
+      <div class="holo-wrap" style="--acc-rgb:0,242,255">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c1-num">01 / E-COMMERCE · ERP</div>
+          <div class="hc-ico">🔗</div>
+          <div class="hc-name" data-i18n="c1-name">ERP SYNC<br>ENGINE</div>
+          <div class="hc-desc" data-i18n="c1-desc">Designed RESTful APIs linking major e-commerce marketplaces with Odoo
+            Community for real-time inventory and order sync. Built at Óxido Verde, Hosono DE, and MisterComp.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">Odoo</span>
+            <span class="hc-tag">Python</span>
+            <span class="hc-tag">REST API</span>
+            <span class="hc-tag">JSON</span>
+          </div>
+          <div class="hc-footer"><a href="#" class="hc-link"><span data-i18n="c1-link">→ LEARN MORE</span></a></div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+      <!-- 02 · CyberOps Defense Matrix — accent: gold -->
+      <div class="holo-wrap" style="--acc-rgb:240,192,64">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c2-num">02 / CYBERSECURITY</div>
+          <div class="hc-ico">🛡️</div>
+          <div class="hc-name" data-i18n="c2-name">CYBEROPS<br>DEFENSE MATRIX</div>
+          <div class="hc-desc" data-i18n="c2-desc">Designed firewall and IDS/IPS defenses at Cisco Systems, built
+            incident response playbooks, and automated threat detection — reducing MTTR by 40%.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">Python</span>
+            <span class="hc-tag">Cisco ASA</span>
+            <span class="hc-tag">IDS/IPS</span>
+            <span class="hc-tag">Splunk</span>
+            <span class="hc-tag">SIEM</span>
+          </div>
+          <div class="hc-footer"><a href="#" class="hc-link"><span data-i18n="c2-link">→ CISCO · SAN JOSE</span></a>
+          </div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+      <!-- 03 · Multi-Platform Data Pipelines — accent: mint -->
+      <div class="holo-wrap" style="--acc-rgb:0,255,157">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c3-num">03 / DATA · INTEGRATION</div>
+          <div class="hc-ico">🔄</div>
+          <div class="hc-name" data-i18n="c3-name">MULTI-PLATFORM<br>DATA PIPELINES</div>
+          <div class="hc-desc" data-i18n="c3-desc">Developed and optimized Python automation scripts for massive
+            multi-platform data integration and transformation at A-B InBev (Prague) and Makana-Partners.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">Python</span>
+            <span class="hc-tag">Pandas</span>
+            <span class="hc-tag">SQL</span>
+            <span class="hc-tag">Docker</span>
+          </div>
+          <div class="hc-footer"><a href="#" class="hc-link"><span data-i18n="c3-link">→ VIEW PROJECT</span></a></div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+      <!-- 04 · Automation Foundry — accent: purple -->
+      <div class="holo-wrap" style="--acc-rgb:180,77,255">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c4-num">04 / AUTOMATION · AIOPS</div>
+          <div class="hc-ico">⚙️</div>
+          <div class="hc-name" data-i18n="c4-name">AUTOMATION<br>FOUNDRY</div>
+          <div class="hc-desc" data-i18n="c4-desc">Built automated workflows for seamless data flow and orchestrated
+            CI/CD pipelines. From low-code RPA to infrastructure-as-code — end-to-end AIOps coverage.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">n8n</span>
+            <span class="hc-tag">Make.com</span>
+            <span class="hc-tag">UiPath</span>
+            <span class="hc-tag">Ansible</span>
+          </div>
+          <div class="hc-footer"><a href="https://github.com/MISTERorg" class="hc-link" target="_blank"><span
+                data-i18n="c4-link">→ GITHUB</span></a></div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+      <!-- 05 · MisterComp Startup — accent: warn/red -->
+      <div class="holo-wrap" style="--acc-rgb:255,51,102">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c5-num">05 / STARTUP · CTO</div>
+          <div class="hc-ico">🚀</div>
+          <div class="hc-name" data-i18n="c5-name">MISTERCOMP<br>STARTUP</div>
+          <div class="hc-desc" data-i18n="c5-desc">Founder &amp; CTO in Douala, Cameroon. Led full-stack engineering —
+            deploying Odoo ERP systems and custom APIs from the ground up, driving 3× user growth in 12 months.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">Angular</span>
+            <span class="hc-tag">Django</span>
+            <span class="hc-tag">AWS</span>
+            <span class="hc-tag">GitLab CI</span>
+            <span class="hc-tag">Tech Support</span>
+          </div>
+          <div class="hc-footer"><a href="https://gitlab.com/mistercomp1/" class="hc-link" target="_blank"><span
+                data-i18n="c5-link">→ VIEW ON GITLAB</span></a></div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+      <!-- 06 · CI & Testing — accent: cyan-teal -->
+      <div class="holo-wrap" style="--acc-rgb:0,220,200">
+        <div class="holo-card">
+          <div class="hc-shimmer"></div>
+          <div class="hc-scanline"></div>
+          <div class="hc-corner"></div>
+          <div class="hc-num" data-i18n="c6-num">06 / QA · CI/CD</div>
+          <div class="hc-ico">🧪</div>
+          <div class="hc-name" data-i18n="c6-name">CONTINUOUS<br>INTEGRATION &amp; TESTING</div>
+          <div class="hc-desc" data-i18n="c6-desc">Conducted testing, validation, and documentation of API endpoints —
+            ensuring 24/7 data accuracy, zero-regression deployments, and automated quality gates.</div>
+          <div class="hc-stack">
+            <span class="hc-tag">Cypress</span>
+            <span class="hc-tag">Playwright</span>
+            <span class="hc-tag">Selenium</span>
+            <span class="hc-tag">SonarQube</span>
+          </div>
+          <div class="hc-footer"><a href="#" class="hc-link"><span data-i18n="c6-link">→ LEARN MORE</span></a></div>
+          <div class="hc-pulse"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 4 — NEURAL MAP
+═══════════════════════════════════════════════ -->
+  <section class="sec" id="s4">
+    <div class="sec-hdr">
+      <div class="sec-n">Cloud Infrastructure · AIOps · DevSecOps · Full-Stack Engineering</div>
+      <div class="sec-t" id="s4t" data-i18n="s4-title">CORE COMPETENCIES</div>
+      <div class="sec-sub" id="s4s" data-i18n="s4-sub">Skills Learned across the years are inclusive but not limited to
+        the skills below</div>
+    </div>
+    <canvas id="neuralCanvas"></canvas>
+    <div class="neural-tip" id="ntip"></div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 5 — ARCHIVE
+═══════════════════════════════════════════════ -->
+
+<section class="sec" id="s5">
+  <div class="sec-hdr">
+    <div class="sec-n">Academic Vault · Certifications · Linguistics</div>
+    <div class="sec-t" data-i18n="s5-title">CORE COMPETENCIES</div>
+    <div class="sec-sub" data-i18n="s5-sub">Proven history of dedication, punctuality and success over the years</div>
+  </div>
+
+  <div class="arc5-grid">
+
+    <!-- ══ CARD 1 — ACADEMIC VAULT ══════════════════════ -->
+    <div class="arc5-frame" style="--beam-color:0,242,255;--beam-speed:5.2s">
+      <div class="arc5-card">
+        <div class="arc5-card-top"></div>
+
+        <div class="arc5-cat" data-i18n="s5-c1-cat">Academic Degrees</div>
+        <div class="arc5-ico">🎓</div>
+
+        <!-- Degree 1 -->
+        <div class="arc5-label" data-i18n="s5-c1-deg1-label">M.Sc. Computer Science</div>
+        <div class="arc5-deg" data-i18n="s5-c1-deg1">M.Sc. Computer Science</div>
+        <div class="arc5-inst" data-i18n="s5-c1-uni1">MIT World Peace University, Pune</div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <span class="arc5-gpa cyan" data-i18n="s5-c1-gpa1">8.52 / 10 CGPA</span>
+          <span class="arc5-badge">
+            🏆 <span data-i18n="s5-c1-badge">2× MERIT SCHOLARSHIP</span>
+          </span>
+        </div>
+
+        <div class="arc5-div"></div>
+
+        <!-- Degree 2 -->
+        <div class="arc5-deg" style="font-size:11px" data-i18n="s5-c1-deg2">B.Tech Software Engineering</div>
+        <div class="arc5-inst" data-i18n="s5-c1-uni2">University of Buea, Cameroon</div>
+        <span class="arc5-gpa mint" style="font-size:20px" data-i18n="s5-c1-gpa2">3.46 / 4.0 CGPA</span>
+      </div>
+    </div>
+
+    <!-- ══ CARD 2 — CYBEROPS CERTIFICATION ══════════════ -->
+    <div class="arc5-frame" style="--beam-color:240,192,64;--beam-speed:4.4s">
+      <div class="arc5-card" style="align-items:center;text-align:center">
+        <div class="arc5-card-top" style="background:linear-gradient(90deg,transparent,rgba(240,192,64,.7),rgba(255,255,255,.8),rgba(240,192,64,.7),transparent)"></div>
+
+        <div class="arc5-cat" style="color:rgba(240,192,64,.75)" data-i18n="s5-c2-cat">Professional Certification</div>
+
+        <!-- Animated SVG shield -->
+        <div class="arc5-shield-wrap">
+          <svg class="arc5-shield" width="88" height="102" viewBox="0 0 88 102" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Outer shield -->
+            <path d="M44 4L8 17V45C8 67 24 86 44 96C64 86 80 67 80 45V17L44 4Z"
+                  fill="rgba(240,192,64,.04)"
+                  stroke="#f0c040" stroke-width="1.6"/>
+            <!-- Inner shield ring -->
+            <path d="M44 12L16 23V45C16 63 28 79 44 88C60 79 72 63 72 45V23L44 12Z"
+                  fill="rgba(240,192,64,.02)"
+                  stroke="#f0c040" stroke-width=".8"
+                  stroke-dasharray="4 5" opacity=".55"/>
+            <!-- CISCO text -->
+            <text x="50%" y="52%" font-family="Orbitron" font-size="9"
+                  fill="#f0c040" text-anchor="middle" dominant-baseline="middle"
+                  letter-spacing="2.5">CISCO</text>
+            <!-- CYBEROPS text -->
+            <text x="50%" y="68%" font-family="JetBrains Mono" font-size="6"
+                  fill="rgba(240,192,64,.7)" text-anchor="middle" dominant-baseline="middle"
+                  letter-spacing="1.2">CYBEROPS</text>
+            <!-- Corner circuit nodes -->
+            <circle cx="8"  cy="17" r="2.5" fill="#f0c040" opacity=".6"/>
+            <circle cx="80" cy="17" r="2.5" fill="#f0c040" opacity=".6"/>
+            <circle cx="44" cy="4"  r="2"   fill="#f0c040" opacity=".8"/>
+          </svg>
+        </div>
+
+        <div class="arc5-cert-title" data-i18n="s5-c2-title">CyberOps Associate</div>
+        <div class="arc5-issuer" data-i18n="s5-c2-iss">Cisco Systems, Inc.</div>
+
+        <!-- Active status -->
+        <div class="arc5-status">
+          <div class="arc5-status-dot"></div>
+          <div class="arc5-status-txt" data-i18n="s5-c2-status">Verified · Active</div>
+        </div>
+
+        <!-- Verify CTA -->
+        <a href="https://www.credly.com/users/elad-daudet/skills"
+           target="_blank"
+           class="arc5-verify-btn"
+           style="width:100%">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <circle cx="6" cy="6" r="5" stroke="#f0c040" stroke-width="1.2"/>
+            <path d="M3.5 6L5.2 7.8L8.5 4.2" stroke="#f0c040" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <span data-i18n="s5-c2-btn">Verify Official Badge ↗</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ══ CARD 3 — LINGUISTICS ══════════════════════════ -->
+    <div class="arc5-frame" style="--beam-color:0,255,157;--beam-speed:6s">
+      <div class="arc5-card">
+        <div class="arc5-card-top" style="background:linear-gradient(90deg,transparent,rgba(0,255,157,.6),rgba(255,255,255,.7),rgba(0,255,157,.6),transparent)"></div>
+
+        <div class="arc5-cat" style="color:rgba(0,255,157,.75)" data-i18n="s5-c3-cat">Linguistics</div>
+        <div class="arc5-ico">🌐</div>
+
+        <div class="arc5-deg" data-i18n="s5-c3-title">Multilingual Professional</div>
+        <div class="arc5-sub" data-i18n="s5-c3-sub">4 Languages · C1–C2 CEFR Level</div>
+
+        <!-- 2×2 language grid -->
+        <div class="arc5-lang-grid">
+
+          <div class="arc5-lang-item" style="--l-rgb:0,242,255">
+            <div class="arc5-lang-lvl">C2</div>
+            <div class="arc5-lang-name" data-i18n="lang-en">ENGLISH</div>
+            <div class="arc5-lang-cefr">CEFR</div>
+          </div>
+
+          <div class="arc5-lang-item" style="--l-rgb:0,242,255">
+            <div class="arc5-lang-lvl">C2</div>
+            <div class="arc5-lang-name" data-i18n="lang-fr">FRENCH</div>
+            <div class="arc5-lang-cefr">CEFR</div>
+          </div>
+
+          <div class="arc5-lang-item" style="--l-rgb:0,255,157">
+            <div class="arc5-lang-lvl">C1</div>
+            <div class="arc5-lang-name" data-i18n="lang-es">SPANISH</div>
+            <div class="arc5-lang-cefr">CEFR</div>
+          </div>
+
+          <div class="arc5-lang-item" style="--l-rgb:0,255,157">
+            <div class="arc5-lang-lvl">C1</div>
+            <div class="arc5-lang-name" data-i18n="lang-ja">JAPANESE</div>
+            <div class="arc5-lang-cefr">CEFR</div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+  <!-- ══════════════════════════════════════════════
+     SECTION 6 — TERMINAL
+═══════════════════════════════════════════════ -->
+  <section class="sec" id="s6" style="gap:0">
+    <div class="sec-hdr">
+      <div class="sec-n">Section 06</div>
+      <div class="sec-t" data-i18n="s6-title">ENGAGEMENT & CONTACT</div>
+      <div class="sec-sub" data-i18n="s6-sub">Professional Network · Direct Communications · Resume Download</div>
+    </div>
+    <div class="term-wrap">
+      <div class="term-bar">
+        <div class="term-dots">
+          <div class="td td1"></div>
+          <div class="td td2"></div>
+          <div class="td td3"></div>
+        </div>
+        <div class="term-title">ELAD_NETWORK_TERMINAL — bash — 80×24</div>
+      </div>
+      <div class="term-body" id="termBody">
+        <span class="t-line"><span class="t-prompt">system@nexus:~$</span> <span class="t-cmd">ping ELAD_ANEDO_DAUDET
+            --connect</span></span>
+      </div>
+      <div class="resume-station arc5-lang-lvl ">
+        <div class="r-pedestal" onclick="downloadCV()">
+          <div class="r-top"><span>⬇</span><span data-i18n="cv-btn">DOWNLOAD CV</span></div>
+          <div class="r-base"></div>
+          <div class="r-foot"></div>
+        </div>
+      </div>
+      <div class="social-row">
+        <a href="https://linkedin.com/in/elad-daudet" class="soc-btn" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+            <circle cx="4" cy="4" r="2" />
+          </svg>
+          LINKEDIN
+        </a>
+        <a href="https://github.com/MISTERorg" class="soc-btn" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22" />
+          </svg>
+          GITHUB
+        </a>
+        <a href="https://gitlab.com/mistercomp1" class="soc-btn" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M23 9.99L20.82 2.2c-.2-.6-1.03-.6-1.22 0L17 9.99H7L4.4 2.2c-.2-.6-1.03-.6-1.22 0L1 9.99 2.82 15.8C3.36 17.52 4.95 18.7 6.78 18.7L12 22.5l5.22-3.8c1.82 0 3.41-1.18 3.96-2.9L23 9.99z" />
+          </svg>
+          GITLAB
+        </a>
+        <a href="https://youtube.com/@eladdaudet" class="soc-btn" target="_blank">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M22.54 6.42a2.78 2.78 0 00-1.94-1.96C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 00-1.94 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.4 19.54C5.12 20 12 20 12 20s6.88 0 8.6-.46a2.78 2.78 0 001.94-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z" />
+            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#03030d" />
+          </svg>
+          YOUTUBE
+        </a>
+        <a href="/cdn-cgi/l/email-protection#ddb8b1bcb9b9bca8b9b8a9ece4ece59dbab0bcb4b1f3beb2b0" class="soc-btn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+          EMAIL
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══ VR Button ══ -->
+  <button id="vrbtn" onclick="enterVR()">◉ ENTER VR</button>
+
+
+  <!-- ══════════════════════════════════════════════
+     SCRIPTS — load order matters:
+     core.js must come last (calls initAll)
+═══════════════════════════════════════════════ -->
+  <script src="js/s1-hero.js"></script>
+  <script src="js/s2-globe.js"></script>
+  <script src="js/s4-neural.js"></script>
+  <script src="js/s6-terminal.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/core.js"></script>
+
+</body>
+
+</html>
