@@ -1,5 +1,5 @@
 # ELAD ANEDO DAUDET — Interactive Portfolio
-# DEMO https://github.com/MISTERorg/portfolio
+# DEMO https://github.com/misterorg.io/portfolio
 
 <div align="center">
 
