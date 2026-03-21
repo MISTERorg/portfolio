@@ -19,6 +19,7 @@ let _tourRunner = null;   // assigned at end of initGlobe()
 let _animToCityFn    = null;
 let _setActiveCityFn = null;
 let _hudEl           = null;
+let _hidePinLabelFn  = null;
 
 /** Called from core.js (scroll trigger) and flyThrough() */
 function triggerGlobeTour() {
@@ -26,6 +27,7 @@ function triggerGlobeTour() {
   _tourId++;
   gsap.killTweensOf(rotState);
   closeCity();
+  if (_hidePinLabelFn) _hidePinLabelFn();
   tourActive = true;
   setTimeout(function() { _tourRunner(_tourId); }, 80);
 }
@@ -378,6 +380,7 @@ function initGlobe() {
         _tourId++;
         gsap.killTweensOf(rotState);
         closeCity();
+        if (_hidePinLabelFn) _hidePinLabelFn();
         tourActive = false;
         if (_hudEl) _hudEl.classList.remove('on');
 
@@ -419,10 +422,54 @@ function initGlobe() {
   /* expose hud to module scope so button handler can hide it */
   _hudEl = hud;
 
+  /* ═══════════════════════════════════════════════════
+     PIN LABEL — shown during tour instead of modal card
+  ═══════════════════════════════════════════════════ */
+  var pinLabelEl = document.createElement('div');
+  pinLabelEl.id = 'globe-pin-label';
+  wrap.appendChild(pinLabelEl);
+
+  function showPinLabel(city) {
+    /* Project the pin-head world position to 2D canvas coords.
+       After _animToCity the globe is stationary, so one snapshot is enough. */
+    var localPos = ll2v(city.lat, city.lon, 1.16);
+    var euler    = new THREE.Euler(rotState.rotX, rotState.rotY, 0, 'XYZ');
+    var worldPos = localPos.clone().applyEuler(euler);
+    var projected = worldPos.project(cam);          // NDC [-1..1]
+
+    /* Only show if the pin is facing the camera */
+    if (projected.z > 1) return;
+
+    var wW = wrap.clientWidth  || W;
+    var wH = wrap.clientHeight || H;
+    var px = ( projected.x * 0.5 + 0.5) * wW;
+    var py = (-projected.y * 0.5 + 0.5) * wH;
+
+    pinLabelEl.style.left = px + 'px';
+    pinLabelEl.style.top  = py + 'px';
+    pinLabelEl.innerHTML  =
+      '<span class="pnl-dot" style="background:' + city.col + ';box-shadow:0 0 8px ' + city.col + '"></span>' +
+      '<div class="pnl-text">' +
+        '<span class="pnl-name" style="color:' + city.col + '">' + city.name + '</span>' +
+        '<span class="pnl-country">' + city.country + '</span>' +
+        '<span class="pnl-role">' + city.role + '</span>' +
+      '</div>';
+    pinLabelEl.style.borderColor = city.col + '55';
+    pinLabelEl.className = 'on';
+  }
+
+  function hidePinLabel() {
+    pinLabelEl.classList.remove('on');
+  }
+
+  /* expose so module-level cancel paths can call it */
+  _hidePinLabelFn = hidePinLabel;
+
   document.getElementById('hud-skip').addEventListener('click', function() {
     _tourId++;
     gsap.killTweensOf(rotState);
     closeCity();
+    hidePinLabel();
     _endTour();
   });
 
@@ -487,6 +534,7 @@ function initGlobe() {
       _tourId++;
       gsap.killTweensOf(rotState);
       closeCity();
+      hidePinLabel();
       _endTour();
     }
     dragging = true;
@@ -620,6 +668,7 @@ function initGlobe() {
   function _endTour() {
     tourActive = false;
     hud.classList.remove('on');
+    hidePinLabel();
     CITIES.forEach(function(c) {
       if (c._panelBtn) c._panelBtn.classList.remove('tour-active');
       if (c._halo) c._halo.material.opacity = 0.20;
@@ -641,18 +690,19 @@ function initGlobe() {
 
       _setActiveCity(city, true);
 
-      await _delay(300);
+      await _delay(200);
       if (id !== _tourId) { _endTour(); return; }
 
-      showCity(city);
+      /* Show pin label — no modal card during tour */
+      showPinLabel(city);
 
-      await _delay(2800);
+      await _delay(2400);
       if (id !== _tourId) { _endTour(); return; }
 
-      closeCity();
+      hidePinLabel();
       _setActiveCity(null, false);
 
-      await _delay(400);
+      await _delay(350);
     }
 
     if (id === _tourId) {
