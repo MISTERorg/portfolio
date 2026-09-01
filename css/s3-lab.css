@@ -525,9 +525,9 @@
 @media (max-width: 560px) {
   .cube-scene { --cube-size: min(322px, calc(100vw - 76px)); }
   .cube-face { --corner-cut: 16px; }
-  .cube-nav { gap: 8px; max-width: 340px; }
-  .cube-nav-btn { padding: 8px 11px; font-size: 8px; }
-  .cube-nav-btn .cnb-label { display: none; } /* icon-only on very small screens — aria-label keeps them announced to screen readers */
+  .cube-nav { gap: 6px; max-width: 340px; }
+  .cube-nav-btn { gap: 5px; padding: 7px 9px; font-size: 7.5px; }
+  .cube-nav-btn .cnb-ico { font-size: 11px; } /* icon + label both stay visible — just tightened to fit */
   /* Individual sides only — NOT the `padding` shorthand, which would
      silently overwrite the safe padding-top rule above and reintroduce
      the corner collision. */
