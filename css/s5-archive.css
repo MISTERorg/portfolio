@@ -69,14 +69,14 @@
 }
 
 /* ═══════════════════════════════════
-   3-COLUMN CARD GRID
+   4-COLUMN CARD GRID
 ═══════════════════════════════════ */
 .arc5-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 28px;
   width: 100%;
-  max-width: 1060px;
+  max-width: 1320px;
   align-items: stretch;
 }
 
@@ -558,9 +558,8 @@
 
 /* ─────────────────────────────────────
    BREAKPOINT 1 — wide tablet (760–1059px)
-   3 cards → 2-column layout.
-   Card 3 (languages) spans both columns
-   and its internal grid expands to 4 cols.
+   4 cards → 2-column layout.
+   Card 3 (Google AI) and card 4 (languages) each span both columns.
 ───────────────────────────────────── */
 @media (max-width: 1059px) {
   .arc5-grid {
@@ -574,7 +573,14 @@
     grid-column: auto;
   }
 
-  /* Card 3 spans full row */
+  /* Card 3 (Google AI) spans full row so it isn't left half-empty */
+  .arc5-frame:nth-child(3) {
+    grid-column: 1 / -1;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  /* Card 4 (languages) spans full row */
   .arc5-frame:last-child {
     grid-column: 1 / -1;
   }

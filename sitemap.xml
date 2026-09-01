@@ -6,92 +6,56 @@
 >
 
   <!-- ═══════════════════════════════════════════
-       PRIMARY URL — English (canonical)
+       PRIMARY URL — single-page portfolio.
+
+       NOTE ON SCOPE: this is a client-side single-page app, so there
+       is exactly one crawlable document. Earlier versions of this
+       sitemap listed each in-page section as its own <url> entry
+       (…/#s1, …/#s2, etc.) — URL fragments are never sent to the
+       server and Google explicitly does not treat them as distinct
+       pages for indexing, so those entries did nothing useful and
+       risked reading as low-value/duplicate URLs. Removed.
   ═══════════════════════════════════════════ -->
   <url>
     <loc>https://misterorg.github.io/portfolio/</loc>
-    <lastmod>2026-03-21</lastmod>
+    <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
 
-    <!-- Multilingual alternates — tells Google all 4 language versions
-         point to the same single-page app -->
+    <!-- Multilingual alternates. These now resolve to real localized
+         content — ?lang= is read on load (see core.js initLangFromURL)
+         and switching language updates the URL, so a crawler visiting
+         any of these actually receives that language's content. -->
     <xhtml:link rel="alternate" hreflang="en"        href="https://misterorg.github.io/portfolio/"/>
     <xhtml:link rel="alternate" hreflang="fr"        href="https://misterorg.github.io/portfolio/?lang=fr"/>
     <xhtml:link rel="alternate" hreflang="es"        href="https://misterorg.github.io/portfolio/?lang=es"/>
     <xhtml:link rel="alternate" hreflang="ja"        href="https://misterorg.github.io/portfolio/?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://misterorg.github.io/portfolio/"/>
 
-    <!-- Hero / OG preview image -->
+    <!-- Hero / OG preview image — helps this page surface in Google
+         Image Search for name and headshot-adjacent queries too. -->
     <image:image>
       <image:loc>https://misterorg.github.io/portfolio/og-preview.png</image:loc>
-      <image:title>Elad Anedo Daudet Ikeorah — DevOps &amp; AIOps Engineer Portfolio</image:title>
-      <image:caption>Interactive 3D portfolio of Elad Anedo Daudet — DevOps, AIOps, and AI Automation Engineer. Founder of MisterComp Cameroon.</image:caption>
+      <image:title>Elad Anedo Daudet Ikeorah — DevSecOps &amp; Agentic AI Automation Engineer</image:title>
+      <image:caption>Interactive 3D portfolio of Elad Anedo Daudet Ikeorah — DevSecOps Engineer and Agentic AI Automation Specialist. Founder of MisterComp Cameroon.</image:caption>
+    </image:image>
+
+    <!-- Professional headshot -->
+    <image:image>
+      <image:loc>https://misterorg.github.io/portfolio/img/elad-headshot.jpg</image:loc>
+      <image:title>Elad Anedo Daudet Ikeorah</image:title>
+      <image:caption>Elad Anedo Daudet Ikeorah, DevSecOps Engineer and Agentic AI Automation Specialist.</image:caption>
     </image:image>
   </url>
 
   <!-- ═══════════════════════════════════════════
-       SECTION ANCHORS
-       Listed individually so Google understands
-       each section as a distinct content unit.
-       Priority scales down from the homepage.
-  ═══════════════════════════════════════════ -->
-
-  <!-- Section 1 — Gateway / Hero -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s1</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-  </url>
-
-  <!-- Section 2 — Global Nexus (3D Globe / Work Experience) -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s2</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <!-- Section 3 — Innovation Lab (Projects) -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s3</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <!-- Section 4 — Neural Map (Skills / Competencies) -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s4</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
-  </url>
-
-  <!-- Section 5 — The Archive (Credentials / Certifications) -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s5</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.80</priority>
-  </url>
-
-  <!-- Section 6 — Terminal / Contact -->
-  <url>
-    <loc>https://misterorg.github.io/portfolio/#s6</loc>
-    <lastmod>2026-03-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.75</priority>
-  </url>
-
-  <!-- ═══════════════════════════════════════════
        DOWNLOADABLE ASSET
-       Lets Google index the CV document directly.
+       Lets Google index the résumé document directly, so it can
+       surface in results for name + "resume"/"CV" searches.
   ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://misterorg.github.io/portfolio/ELAD_ANEDO_DAUDET.docx</loc>
-    <lastmod>2026-03-21</lastmod>
+    <loc>https://misterorg.github.io/portfolio/ELAD_DAUDET_RESUME.pdf</loc>
+    <lastmod>2026-08-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
   </url>

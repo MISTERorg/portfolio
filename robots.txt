@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://misterorg.github.io/portfolio/sitemap.xml

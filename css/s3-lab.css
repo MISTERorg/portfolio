@@ -298,3 +298,240 @@
     }
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   PROJECT CUBE — 6 project cards, one per cube face,
+   navigated via the tab rail (data-side pattern) or ← → keys.
+
+   Each face carries its OWN animated conic-gradient beam
+   border directly — not a separate static frame — so the
+   border rotates WITH the cube as it turns. Same technique
+   as the Archive section's bento-card beam border, scaled
+   up (thicker ring, two light-bands instead of one) and
+   layered onto a translucent glass panel instead of an
+   opaque one.
+═══════════════════════════════════════════════════ */
+
+@property --face-beam-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ── Layout: nav rail beside the cube on desktop, stacked on mobile ── */
+.cube-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 52px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Nav rail — vertical stack to the left of the cube on desktop ── */
+.cube-nav {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.cube-nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 172px;
+  padding: 10px 16px;
+  background: rgba(var(--acc-rgb, 0,242,255), .05);
+  border: 1px solid rgba(var(--acc-rgb, 0,242,255), .28);
+  color: rgba(var(--acc-rgb, 0,242,255), .75);
+  font-family: var(--fd);
+  font-size: 9.5px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  transition: background .2s, border-color .2s, color .2s, box-shadow .2s;
+}
+.cube-nav-btn .cnb-ico { font-size: 13px; filter: grayscale(.15); }
+.cube-nav-btn:hover {
+  background: rgba(var(--acc-rgb, 0,242,255), .1);
+  border-color: rgba(var(--acc-rgb, 0,242,255), .5);
+}
+.cube-nav-btn.active {
+  background: rgba(var(--acc-rgb, 0,242,255), .16);
+  border-color: rgba(var(--acc-rgb, 0,242,255), .75);
+  color: #fff;
+  box-shadow: 0 0 18px rgba(var(--acc-rgb, 0,242,255), .3);
+}
+
+/* ── 3D scene ── */
+.cube-scene {
+  --cube-size: 420px;
+  width: var(--cube-size);
+  max-width: var(--cube-size);
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+  perspective: 1800px;
+  outline: none;
+}
+.cube-scene:focus-visible .cube { box-shadow: 0 0 0 2px rgba(0,242,255,.5); }
+
+.cube {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(var(--cube-size) / -2)) rotateY(0deg);
+  transition: transform 1s cubic-bezier(.65,0,.35,1);
+}
+.cube.show-front  { transform: translateZ(calc(var(--cube-size) / -2)) rotateY(0deg); }
+.cube.show-right  { transform: translateZ(calc(var(--cube-size) / -2)) rotateY(-90deg); }
+.cube.show-back   { transform: translateZ(calc(var(--cube-size) / -2)) rotateY(-180deg); }
+.cube.show-left   { transform: translateZ(calc(var(--cube-size) / -2)) rotateY(90deg); }
+.cube.show-top    { transform: translateZ(calc(var(--cube-size) / -2)) rotateX(-90deg); }
+.cube.show-bottom { transform: translateZ(calc(var(--cube-size) / -2)) rotateX(90deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .cube { transition: none; }
+}
+
+/* ── Faces: the conic-gradient IS the border (padding reveals it),
+   and it fades to full transparency outside the moving light band —
+   this is a light-ray sweep, not a constant glowing rim. Thicker
+   ring (4px) and a two-band gradient (two light rays, opposite each
+   other) — "wider and more complex" than the single-band beam used
+   on the Archive cards. ── */
+.cube-face {
+  --face-beam-angle: 0deg;
+  --corner-cut: 32px;
+  position: absolute;
+  inset: 0;
+  padding: 4px;
+  clip-path: polygon(var(--corner-cut) 0, 100% 0, 100% calc(100% - var(--corner-cut)), calc(100% - var(--corner-cut)) 100%, 0 100%, 0 var(--corner-cut));
+  background: conic-gradient(
+    from var(--face-beam-angle),
+    rgba(var(--acc-rgb), 0)    0%,
+    rgba(var(--acc-rgb), 0)   18%,
+    rgba(var(--acc-rgb), .9)  30%,
+    rgba(255,255,255, .95)    34%,
+    rgba(var(--acc-rgb), .9)  38%,
+    rgba(var(--acc-rgb), 0)   50%,
+    rgba(var(--acc-rgb), 0)   68%,
+    rgba(var(--acc-rgb), .8)  80%,
+    rgba(255,255,255, .9)     84%,
+    rgba(var(--acc-rgb), .8)  88%,
+    rgba(var(--acc-rgb), 0)  100%
+  );
+  animation: face-beam-spin 7s linear infinite;
+  box-shadow: 0 10px 50px rgba(0,0,0,.55);
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+@keyframes face-beam-spin { to { --face-beam-angle: 360deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .cube-face { animation: none; }
+}
+
+.cf-front  { transform: rotateY(0deg)    translateZ(calc(var(--cube-size) / 2)); }
+.cf-back   { transform: rotateY(180deg)  translateZ(calc(var(--cube-size) / 2)); }
+.cf-right  { transform: rotateY(90deg)   translateZ(calc(var(--cube-size) / 2)); }
+.cf-left   { transform: rotateY(-90deg)  translateZ(calc(var(--cube-size) / 2)); }
+.cf-top    { transform: rotateX(90deg)   translateZ(calc(var(--cube-size) / 2)); }
+.cf-bottom { transform: rotateX(-90deg)  translateZ(calc(var(--cube-size) / 2)); }
+
+/* ── Inner glass panel — sits inside the 4px animated-border gap.
+   Translucent (not opaque) so the section behind bleeds through
+   faintly, for the "transparent cube" glass feel. ── */
+.cf-inner {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  clip-path: polygon(
+    calc(var(--corner-cut) - 4px) 0,
+    100% 0,
+    100% calc(100% - var(--corner-cut) + 4px),
+    calc(100% - var(--corner-cut) + 4px) 100%,
+    0 100%,
+    0 calc(var(--corner-cut) - 4px)
+  );
+  background: linear-gradient(145deg, rgba(8,14,36,.98), rgba(4,8,24,.99));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: clamp(10px, 2vh, 18px);
+  padding: clamp(22px, 4vw, 34px) clamp(20px, 3.6vw, 30px);
+  /* Top padding is never allowed to shrink below the corner-cut + a safety
+     margin, so content can never land in the diagonally-clipped zone —
+     independent of how tall the content block is on a given card. */
+  padding-top: max(clamp(22px, 4vw, 34px), calc(var(--corner-cut) + 12px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  /* On the rare narrow-viewport case where content still needs to scroll
+     within a face, make that scrollbar visible and on-theme rather than
+     an invisible/undiscoverable affordance — nothing should be reachable
+     only by a gesture the person has no visual cue to try. */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--acc-rgb), .5) transparent;
+}
+.cf-inner::-webkit-scrollbar { width: 5px; }
+.cf-inner::-webkit-scrollbar-track { background: transparent; }
+.cf-inner::-webkit-scrollbar-thumb {
+  background: rgba(var(--acc-rgb), .5);
+  border-radius: 3px;
+}
+.cf-inner .hc-scanline {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(var(--acc-rgb),.02) 3px,rgba(var(--acc-rgb),.02) 4px);
+  pointer-events: none; z-index: 0;
+}
+.cf-inner .hc-num  { font-size: 8.5px; margin-bottom: 0; }
+.cf-inner .hc-ico  { margin-bottom: 0; }
+.cf-inner .hc-name { margin-bottom: 0; }
+.cf-inner .hc-desc { font-size: clamp(10px, 1vw, 11px); line-height: 1.7; flex: none; margin-bottom: 0; }
+.cf-inner .hc-stack{ margin-bottom: 0; }
+.cf-inner .hc-footer{ margin-top: 0; }
+
+.cube-hint {
+  text-align: center;
+  margin-top: 28px;
+  font-family: var(--fm);
+  font-size: 10px;
+  letter-spacing: .1em;
+  color: rgba(184, 204, 238, .38);
+}
+
+/* ── Responsive: nav rail moves above the cube and goes horizontal;
+   the cube geometry itself shrinks, not just its content. Corner-cut
+   scales down at each step too — a fixed-pixel cut that doesn't shrink
+   with the card eats a growing share of a small face and pushes content
+   into the clipped corner (this caused the "06 / STARTUP" label to
+   collide with the border on mobile). ── */
+@media (max-width: 900px) {
+  .cube-layout { flex-direction: column; gap: 28px; }
+  .cube-nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 720px;
+  }
+  .cube-nav-btn { width: auto; font-size: 9px; padding: 9px 13px; }
+  .cube-scene { --cube-size: min(340px, calc(100vw - 76px)); }
+  .cube-face { --corner-cut: 22px; }
+}
+@media (max-width: 560px) {
+  .cube-scene { --cube-size: min(322px, calc(100vw - 76px)); }
+  .cube-face { --corner-cut: 16px; }
+  .cube-nav { gap: 8px; max-width: 340px; }
+  .cube-nav-btn { padding: 8px 11px; font-size: 8px; }
+  .cube-nav-btn .cnb-label { display: none; } /* icon-only on very small screens — aria-label keeps them announced to screen readers */
+  /* Individual sides only — NOT the `padding` shorthand, which would
+     silently overwrite the safe padding-top rule above and reintroduce
+     the corner collision. */
+  .cf-inner { padding-left: 16px; padding-right: 16px; padding-bottom: 16px; }
+  .cf-inner .hc-desc { font-size: 9px; line-height: 1.55; }
+  .cf-inner .hc-stack .hc-tag { font-size: 7px; padding: 3px 7px; }
+}

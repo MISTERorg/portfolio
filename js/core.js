@@ -5,6 +5,36 @@
 const $ = id => document.getElementById(id);
 const secs = ['s1','s2','s3','s4','s5','s6'];
 
+/* ── URL-driven language init ──
+   Reads ?lang= on load so the hreflang alternates listed in sitemap.xml
+   (…/?lang=fr etc.) actually serve localized content to crawlers and
+   visitors, not just the default English. Also keeps <html lang="…">
+   accurate (screen readers + search engines both read it) and updates
+   the URL (without adding history entries) when someone switches
+   language via the nav buttons, so the language they land on is
+   always shareable/bookmarkable/re-crawlable. ── */
+(function initLangFromURL(){
+  const SUPPORTED = ['en','fr','es','ja'];
+  const params = new URLSearchParams(location.search);
+  const urlLang = params.get('lang');
+  if (SUPPORTED.includes(urlLang) && urlLang !== 'en' && typeof setGlobalLang === 'function') {
+    setGlobalLang(urlLang);
+  }
+  document.documentElement.lang = SUPPORTED.includes(urlLang) ? urlLang : 'en';
+
+  document.querySelectorAll('.ln-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const code = btn.textContent.trim().toLowerCase();
+      if (!SUPPORTED.includes(code)) return;
+      document.documentElement.lang = code;
+      const url = new URL(location.href);
+      if (code === 'en') url.searchParams.delete('lang');
+      else url.searchParams.set('lang', code);
+      history.replaceState(null, '', url);
+    });
+  });
+})();
+
 /* ── Inject #warp element (used by warp animation) ── */
 (function(){
   if (!$('warp')) {
@@ -78,6 +108,74 @@ const revIO=new IntersectionObserver(entries=>{
   });
 },{threshold:.18});
 secs.slice(1).forEach(id=>revIO.observe($(id)));
+
+/* ── Universal reveal: fades/rises .reveal elements into view (section
+   headers etc.) with a slower, calmer easing than the card reveals above.
+   Skipped under prefers-reduced-motion — CSS already shows them statically. ── */
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!prefersReducedMotion){
+  const revealIO=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        revealIO.unobserve(e.target);
+      }
+    });
+  },{threshold:.15,rootMargin:'0px 0px -8% 0px'});
+  document.querySelectorAll('.reveal').forEach(el=>revealIO.observe(el));
+}else{
+  document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+}
+
+/* ── Hero ambient parallax: the core-glow and monogram drift slightly
+   as the hero scrolls past, echoing the slow scroll-linked drift of the
+   reference site. Subtle and capped — never more than ~40px — and
+   fully disabled under prefers-reduced-motion. ── */
+if(!prefersReducedMotion){
+  const heroCore=$('heroCore'), heroMon=$('emon'), heroSec=$('s1');
+  if(heroCore && heroSec){
+    let ticking=false;
+    const applyParallax=()=>{
+      const r=heroSec.getBoundingClientRect();
+      const vh=window.innerHeight;
+      /* progress: 0 when hero fills viewport, →1 as it scrolls away */
+      const progress=Math.min(1,Math.max(0,(-r.top)/vh));
+      const drift=progress*40;
+      heroCore.style.transform=`translate(-50%,-52%) translateY(${drift}px)`;
+      if(heroMon) heroMon.style.transform=`translateY(${drift*.5}px)`;
+      heroCore.style.opacity=String(1-progress*.4);
+      ticking=false;
+    };
+    window.addEventListener('scroll',()=>{
+      if(!ticking){requestAnimationFrame(applyParallax);ticking=true;}
+    },{passive:true});
+    applyParallax();
+  }
+}
+
+/* ── Sidenav progress fill: a subtle "how far through the portfolio"
+   cue behind the section dots — a glowing line that grows with
+   overall scroll position. Always active (not gated behind
+   prefers-reduced-motion) since it's a state indicator, not a moving
+   decoration — but its CSS transition is disabled for that preference
+   so it jumps instead of animating. ── */
+(function(){
+  const fill = $('sidenavFill');
+  if(!fill) return;
+  let ticking = false;
+  const applyProgress = () => {
+    const doc = document.documentElement;
+    const scrollable = doc.scrollHeight - window.innerHeight;
+    const pct = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+    fill.style.height = pct + '%';
+    ticking = false;
+  };
+  window.addEventListener('scroll', () => {
+    if(!ticking){ requestAnimationFrame(applyProgress); ticking = true; }
+  }, {passive:true});
+  window.addEventListener('resize', applyProgress, {passive:true});
+  applyProgress();
+})();
 
 /* ═══════════════════════════════════════════════════
    LOADER
@@ -188,8 +286,8 @@ function initAll(){
   checkXR();
   setTimeout(()=>{
     animCount($('cnt1'),6,'+');
-    animCount($('cnt2'),9);
-    animCount($('cnt3'),12);
+    animCount($('cnt2'),7);
+    animCount($('cnt3'),2);
     animCount($('cnt4'),4);
   },400);
 }

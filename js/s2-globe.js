@@ -63,7 +63,7 @@ var CITIES = [
     role:'Technical Support & Automation Engineer',
     company:'Hosono DE', icon:'🤖',
     industry:'AI Automation · LLMOps', industryCol:'#ff6688',
-    status:'Hybrid Contract · Oct 2025–Feb 2026',
+    status:'Hybrid Contract · Oct 2025–Jun 2026',
     metrics:[{val:'n8n+',lbl:'Automation Stack'},{val:'ISO 27001',lbl:'Compliance'},{val:'100%',lbl:'GDPR'}],
     impact:[
       'Built and deployed end-to-end n8n & Ansible/Semaphore automations for testing, tracking and server inventory',

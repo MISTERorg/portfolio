@@ -8,7 +8,7 @@
   --gcb:0 0 24px rgba(0,242,255,.45),0 0 50px rgba(0,242,255,.18);
   --gnm:0 0 20px rgba(0,255,157,.4),0 0 40px rgba(0,255,157,.15);
 }
-html{scroll-behavior:smooth;scroll-snap-type:y mandatory;overflow-y:scroll}
+html{scroll-behavior:smooth;scroll-snap-type:y proximity;overflow-y:scroll}
 body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);color:var(--txt);cursor:none;-webkit-font-smoothing:antialiased}
 
 /* ═══════════ CURSOR ═══════════ */
@@ -29,7 +29,28 @@ body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);co
 
 /* ═══════════ SIDE NAV ═══════════ */
 #sidenav{position:fixed;right:28px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:22px;align-items:center}
-.nd{width:8px;height:8px;border-radius:50%;border:1px solid rgba(0,242,255,.32);cursor:pointer;transition:all .3s;position:relative}
+/* Progress line — a subtle "how far through the portfolio" cue.
+   Sits behind the dots (thin track always visible, glowing fill grows
+   with scroll position) rather than adding any new UI chrome. */
+.sidenav-track{
+  position:absolute;
+  left:50%; top:4px; bottom:4px;
+  width:1px;
+  transform:translateX(-50%);
+  background:rgba(0,242,255,.14);
+  z-index:0;
+  pointer-events:none;
+}
+.sidenav-fill{
+  position:absolute;
+  left:0; top:0; width:100%;
+  height:0%;
+  background:linear-gradient(180deg, var(--cb), rgba(0,242,255,.35));
+  box-shadow:0 0 8px rgba(0,242,255,.55);
+  transition:height .2s linear;
+}
+@media (prefers-reduced-motion: reduce){ .sidenav-fill{ transition:none; } }
+.nd{width:8px;height:8px;border-radius:50%;border:1px solid rgba(0,242,255,.32);cursor:pointer;transition:all .3s;position:relative;z-index:1}
 .nd.on{background:var(--cb);box-shadow:0 0 14px var(--cb);border-color:var(--cb)}
 .nd::after{content:attr(data-l);position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:var(--fm);font-size:8px;color:var(--cb);white-space:nowrap;opacity:0;transition:opacity .2s;letter-spacing:.15em;text-transform:uppercase;pointer-events:none}
 .nd:hover::after{opacity:.85}
@@ -47,8 +68,8 @@ body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);co
 /* ═══════════ LOADER ═══════════ */
 #ldr{position:fixed;inset:0;background:#000;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;transition:opacity .9s}
 #ldr.hide{opacity:0;pointer-events:none}
-.lp{font-family:var(--fd);font-size:clamp(52px,9vw,88px);font-weight:900;color:var(--cb);letter-spacing:.45em;text-shadow:0 0 50px var(--cb),0 0 100px rgba(0,242,255,.3),0 0 160px rgba(0,242,255,.1);animation:glitch 5s infinite}
-@keyframes glitch{0%,86%,100%{transform:none;filter:none}87%{transform:translateX(-4px);filter:hue-rotate(90deg)}89%{transform:translateX(4px)}91%{transform:none;filter:none}93%{transform:translateX(-2px);filter:brightness(2.2)}95%{transform:none;filter:none}}
+.lp{font-family:var(--fd);font-size:clamp(52px,9vw,88px);font-weight:900;color:var(--cb);letter-spacing:.45em;text-shadow:0 0 50px var(--cb),0 0 100px rgba(0,242,255,.3),0 0 160px rgba(0,242,255,.1);animation:glitch 6s infinite}
+@keyframes glitch{0%,88%,100%{transform:none;filter:none}89%{transform:translateX(-2px);filter:hue-rotate(20deg)}90.5%{transform:translateX(2px)}92%{transform:none;filter:none}94%{transform:translateX(-1px);filter:brightness(1.25)}95.5%{transform:none;filter:none}}
 .lbw{width:300px;height:1px;background:rgba(0,242,255,.08);overflow:hidden;position:relative}
 .lb{position:absolute;height:100%;width:0;background:linear-gradient(90deg,transparent,var(--cb),var(--nm));box-shadow:0 0 12px var(--cb);transition:width .3s ease}
 .lt{font-family:var(--fd);font-size:9px;letter-spacing:.5em;color:rgba(0,242,255,.45);text-transform:uppercase}
@@ -77,10 +98,74 @@ body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);co
 /* ═══════════ FLY OVERLAY ═══════════ */
 #fly-overlay{position:fixed;inset:0;z-index:900;background:#000;opacity:0;pointer-events:none}
 
-/* ═══════════ RESPONSIVE ═══════════ */
+/* ═══════════ REDUCED MOTION ═══════════
+   Respect the user's OS-level motion preference: shorten/disable
+   decorative animation so nothing spins, pulses, or flashes
+   for people who've asked for less motion. Content still reveals,
+   just instantly rather than via transition. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  html { scroll-snap-type: none; }
+}
+
+/* ═══════════ SCROLL REVEAL ═══════════
+   Lightweight, languid fade+rise used on section headers and any
+   element opted in via .reveal — deliberately slower and gentler
+   (cubic-bezier ease-out, generous duration) than the site's other
+   motion, closer to the pacing of a calm editorial scroll. */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 1.1s cubic-bezier(.16,1,.3,1),transform 1.1s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:translateY(0)}
+.reveal-stg .reveal:nth-child(1){transition-delay:.05s}
+.reveal-stg .reveal:nth-child(2){transition-delay:.16s}
+.reveal-stg .reveal:nth-child(3){transition-delay:.27s}
+.reveal-stg .reveal:nth-child(4){transition-delay:.38s}
+.reveal-stg .reveal:nth-child(5){transition-delay:.49s}
+.reveal-stg .reveal:nth-child(6){transition-delay:.6s}
+.reveal-stg .reveal:nth-child(7){transition-delay:.71s}
+.reveal-stg .reveal:nth-child(8){transition-delay:.82s}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1!important;transform:none!important;transition:none!important}
+}
+
+/* ═══════════ AMBIENT CORE GLOW ═══════════
+   A single soft breathing light source behind the hero — the
+   site's answer to a "signature" ambient visual. Cyan/mint,
+   not literal, sits behind the monogram and drifts gently with
+   scroll (driven from core.js), never obscuring text. */
+.hero-core{
+  position:absolute;
+  top:50%;left:50%;
+  width:min(72vw,760px);height:min(72vw,760px);
+  transform:translate(-50%,-52%);
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(0,242,255,.16) 0%,
+    rgba(0,255,157,.08) 32%,
+    rgba(0,242,255,.03) 55%,
+    transparent 72%);
+  filter:blur(4px);
+  pointer-events:none;
+  z-index:0;
+  animation:core-breathe 7s ease-in-out infinite;
+  will-change:opacity;
+}
+/* NOTE: intentionally opacity-only — core.js drives this element's
+   `transform` for scroll parallax, so the keyframe must not also
+   animate transform or the two would fight every frame. */
+@keyframes core-breathe{
+  0%,100%{opacity:.75}
+  50%{opacity:1}
+}
+@media (prefers-reduced-motion: reduce){
+  .hero-core{animation:none;opacity:.85}
+}
 @media(max-width:640px){
-  .gstats{gap:22px;flex-wrap:wrap;justify-content:center}
-  #sidenav{right:10px}
+  .hero-core{width:88vw;height:88vw}
 }
 /* [file name]: global.css (add these variables at the end if missing) */
 /* Add to :root if not already present - check first */
@@ -112,17 +197,21 @@ body{width:100%;background:var(--obs);overflow-x:hidden;font-family:var(--fm);co
   position: relative;
 }
 /* modal-open scroll-snap lock removed — modal is now scoped inside #s2 */
-/* ── Warp flash overlay ── */
+/* ── Warp transition overlay (softened — smooth glow-through, not a hard flash) ── */
 #warp {
   position: fixed;
   inset: 0;
   z-index: 1500;
-  background: radial-gradient(circle, #00f2ff, #000009);
+  background: radial-gradient(circle, rgba(0,242,255,.55), rgba(0,3,10,.92) 78%);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .35s ease;
+  transition: opacity .6s cubic-bezier(.4,0,.2,1);
 }
-#warp.flash { opacity: 1; }
+#warp.flash { opacity: .88; }
+
+@media (prefers-reduced-motion: reduce) {
+  #warp { transition: none; opacity: 0 !important; }
+}
 
 /* ═══════════ FULL RESPONSIVE ═══════════ */
 
