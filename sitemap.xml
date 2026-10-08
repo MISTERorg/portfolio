@@ -17,7 +17,7 @@
        risked reading as low-value/duplicate URLs. Removed.
   ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://eladdaudet.dev/</loc>
+    <loc>https://misterorg.github.io/portfolio/</loc>
     <lastmod>2026-08-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
@@ -26,23 +26,23 @@
          content — ?lang= is read on load (see core.js initLangFromURL)
          and switching language updates the URL, so a crawler visiting
          any of these actually receives that language's content. -->
-    <xhtml:link rel="alternate" hreflang="en"        href="https://eladdaudet.dev/"/>
-    <xhtml:link rel="alternate" hreflang="fr"        href="https://eladdaudet.dev/?lang=fr"/>
-    <xhtml:link rel="alternate" hreflang="es"        href="https://eladdaudet.dev/?lang=es"/>
-    <xhtml:link rel="alternate" hreflang="ja"        href="https://eladdaudet.dev/?lang=ja"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://eladdaudet.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en"        href="https://misterorg.github.io/portfolio/"/>
+    <xhtml:link rel="alternate" hreflang="fr"        href="https://misterorg.github.io/portfolio/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="es"        href="https://misterorg.github.io/portfolio/?lang=es"/>
+    <xhtml:link rel="alternate" hreflang="ja"        href="https://misterorg.github.io/portfolio/?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://misterorg.github.io/portfolio/"/>
 
     <!-- Hero / OG preview image — helps this page surface in Google
          Image Search for name and headshot-adjacent queries too. -->
     <image:image>
-      <image:loc>https://eladdaudet.dev/og-preview.png</image:loc>
+      <image:loc>https://misterorg.github.io/portfolio/og-preview.png</image:loc>
       <image:title>Elad Anedo Daudet Ikeorah — DevSecOps &amp; Agentic AI Automation Engineer</image:title>
       <image:caption>Interactive 3D portfolio of Elad Anedo Daudet Ikeorah — DevSecOps Engineer and Agentic AI Automation Specialist. Founder of MisterComp Cameroon.</image:caption>
     </image:image>
 
     <!-- Professional headshot -->
     <image:image>
-      <image:loc>https://eladdaudet.dev/img/elad-headshot.jpg</image:loc>
+      <image:loc>https://misterorg.github.io/portfolio/img/elad-headshot.jpg</image:loc>
       <image:title>Elad Anedo Daudet Ikeorah</image:title>
       <image:caption>Elad Anedo Daudet Ikeorah, DevSecOps Engineer and Agentic AI Automation Specialist.</image:caption>
     </image:image>
@@ -54,7 +54,7 @@
        surface in results for name + "resume"/"CV" searches.
   ═══════════════════════════════════════════ -->
   <url>
-    <loc>https://eladdaudet.dev/ELAD_DAUDET_RESUME_en.pdf</loc>
+    <loc>https://misterorg.github.io/portfolio/ELAD_DAUDET_RESUME_en.pdf</loc>
     <lastmod>2026-08-31</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.6</priority>
