@@ -1,11 +1,63 @@
 {
-  "name": "Elad Anedo Daudet Ikeorah",
+  "name": "Elad Anedo Daudet Ikeorah (Daudet Ikeorah Elad Anedo)",
   "short_name": "Elad Daudet",
-  "icons": [
-    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png" }
-  ],
-  "theme_color": "#03030d",
+  "description": "Official interactive portfolio of Elad Anedo Daudet Ikeorah (Elad Daudet / Elad Anedo) — DevSecOps Engineer, Agentic AI Automation Specialist, and founder of MisterComp Cameroon.",
+  "start_url": "https://misterorg.github.io/portfolio/?utm_source=pwa",
+  "scope": "https://misterorg.github.io/portfolio/",
+  "id": "https://misterorg.github.io/portfolio/",
+  "display": "standalone",
+  "orientation": "any",
   "background_color": "#03030d",
-  "display": "standalone"
+  "theme_color": "#03030d",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "technology",
+    "developer",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "img/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "img/favicon-48.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "img/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "img/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "View LinkedIn Profile",
+      "short_name": "LinkedIn",
+      "description": "Connect with Elad Anedo Daudet Ikeorah on LinkedIn",
+      "url": "https://linkedin.com/in/elad-daudet"
+    },
+    {
+      "name": "View GitHub Repositories",
+      "short_name": "GitHub",
+      "description": "Explore open-source DevSecOps and AI projects",
+      "url": "https://github.com/MISTERorg"
+    }
+  ]
 }
