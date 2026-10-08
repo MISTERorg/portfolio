@@ -12,7 +12,7 @@
 ╚══════╝╚═╝  ╚═╝╚═════╝
 ```
 
-**DevOps & AIOps Engineer · AI-Powered Automation Expert · Digital Nomad**
+**DevSecOps Engineer · Agentic AI Automation Specialist · Digital Nomad**
 
 [![Live Demo](https://img.shields.io/badge/LIVE-DEMO-00f2ff?style=for-the-badge&logo=vercel&logoColor=black)](https://eladdaudet.dev)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Elad_Daudet-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/elad-daudet)
@@ -259,13 +259,13 @@ Then open `http://localhost:8080` in any Chromium or Firefox browser.
 ## About the Author
 
 **Elad Anedo Daudet Ikeorah**
-DevOps & AIOps Engineer · Cisco CyberOps Associate · Founder, MisterComp
+DevSecOps Engineer · Agentic AI Automation Specialist · Cisco CyberOps Associate · Google AI Professional · Founder, MisterComp
 
-6+ years deploying infrastructure and automation systems across Cameroon, Germany, Japan, Czech Republic, India, and the United States. M.Sc. Computer Science (8.52/10 CGPA, 2× Merit Scholar). Fluent in English, French, Spanish, and Japanese.
+6+ years deploying secure infrastructure and automation systems across Cameroon, Germany, Japan, Czech Republic, India, Spain, and the United States. M.Sc. Computer Science (Distinction · 3.6/4.0 CGPA, 2× Merit Scholar). Fluent in English, French, Spanish, and Japanese.
 
 - 📧 eladdaudet1918@gmail.com
-- 📞 +1 (240) 261 3649 · +91 89834 61149
-- 🌍 Silver Spring, MD, USA
+- 📞 +91 89834 61149
+- 🌍 Valencia, Spain · Open to Relocation
 - 🔗 [linkedin.com/in/elad-daudet](https://linkedin.com/in/elad-daudet)
 
 ---

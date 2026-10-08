@@ -165,6 +165,7 @@ var CITIES = [
    GLOBE INIT
 ═══════════════════════════════════════════════════ */
 function initGlobe() {
+  if (!hasWebGL()) return;
   /* ── Move city-overlay into #s2 so modal is anchored to the globe section ── */
   var s2el = document.getElementById('s2');
   var overlayEl = document.getElementById('city-overlay');
@@ -360,8 +361,9 @@ function initGlobe() {
   scene.add(arcGroup);
 
   /* ── stars ── */
-  var starPos = new Float32Array(1200 * 3);
-  for (var si = 0; si < 1200; si++) {
+  var STAR_COUNT = (window.innerWidth <= 720 ? 500 : 1200);
+  var starPos = new Float32Array(STAR_COUNT * 3);
+  for (var si = 0; si < STAR_COUNT; si++) {
     var sr = 5 + Math.random() * 10;
     var st = Math.random() * Math.PI * 2;
     var sp = Math.acos(2 * Math.random() - 1);

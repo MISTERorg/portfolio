@@ -22,9 +22,27 @@ function spawnStreams(){
 }
 
 /* ═══════════════════════════════════════════════════
+   WEBGL SUPPORT CHECK
+   Shared by every Three.js scene on the page. Some locked-down
+   corporate laptops and privacy-hardened browser configs disable
+   WebGL entirely — without this check, `new THREE.WebGLRenderer()`
+   throws, and since initAll() calls every section's init function
+   in sequence with nothing to catch it, one unsupported browser
+   would silently break every section after the one that failed.
+═══════════════════════════════════════════════════ */
+function hasWebGL(){
+  try{
+    const c=document.createElement('canvas');
+    return !!(window.WebGLRenderingContext &&
+      (c.getContext('webgl') || c.getContext('experimental-webgl')));
+  }catch(e){ return false; }
+}
+
+/* ═══════════════════════════════════════════════════
    SEC 1 — HERO PARTICLES (Three.js)
 ═══════════════════════════════════════════════════ */
 function initHeroParticles(){
+  if(!hasWebGL()) return;
   const canvas=$('hero-canvas');
   const W=window.innerWidth, H=window.innerHeight;
   canvas.width=W; canvas.height=H;
@@ -36,8 +54,11 @@ function initHeroParticles(){
   const cam=new THREE.PerspectiveCamera(65,W/H,.1,1000);
   cam.position.z=55;
 
-  /* ── Particle field ── */
-  const N=3200, pos=new Float32Array(N*3), col=new Float32Array(N*3);
+  /* ── Particle field ──
+     Fewer particles on narrow viewports (same 720px breakpoint used
+     elsewhere in the site's CSS) — a phone shouldn't be pushed to
+     render the same particle load as a desktop. */
+  const N=(window.innerWidth<=720?1400:3200), pos=new Float32Array(N*3), col=new Float32Array(N*3);
   for(let i=0;i<N;i++){
     pos[i*3]=(Math.random()-.5)*220;
     pos[i*3+1]=(Math.random()-.5)*130;

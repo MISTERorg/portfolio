@@ -5,22 +5,52 @@
 const $ = id => document.getElementById(id);
 const secs = ['s1','s2','s3','s4','s5','s6'];
 
-/* ── URL-driven language init ──
+/* ── URL-driven + browser-driven language init ──
    Reads ?lang= on load so the hreflang alternates listed in sitemap.xml
    (…/?lang=fr etc.) actually serve localized content to crawlers and
    visitors, not just the default English. Also keeps <html lang="…">
    accurate (screen readers + search engines both read it) and updates
    the URL (without adding history entries) when someone switches
    language via the nav buttons, so the language they land on is
-   always shareable/bookmarkable/re-crawlable. ── */
+   always shareable/bookmarkable/re-crawlable.
+
+   When there's no explicit ?lang=, falls back to the browser's own
+   language preference (navigator.languages, in the visitor's own
+   priority order) so a French-language browser lands on the French
+   site automatically. Anything that isn't EN/FR/ES/JA defaults to
+   English. An explicit ?lang= always wins over auto-detection, since
+   that's how shared links and search-engine crawls stay pinned to a
+   specific language regardless of the visitor's own browser. ── */
 (function initLangFromURL(){
   const SUPPORTED = ['en','fr','es','ja'];
+
+  /* Reduces a full BCP-47 tag ("fr-CA", "es-419", "ja") down to one of
+     our 4 supported codes, or null if there's no match. */
+  function normalizeLang(tag){
+    if (!tag) return null;
+    const base = String(tag).toLowerCase().split('-')[0];
+    return SUPPORTED.includes(base) ? base : null;
+  }
+
+  function detectBrowserLang(){
+    const prefs = (navigator.languages && navigator.languages.length)
+      ? navigator.languages
+      : [navigator.language || navigator.userLanguage];
+    for (const tag of prefs) {
+      const match = normalizeLang(tag);
+      if (match) return match;
+    }
+    return 'en';
+  }
+
   const params = new URLSearchParams(location.search);
   const urlLang = params.get('lang');
-  if (SUPPORTED.includes(urlLang) && urlLang !== 'en' && typeof setGlobalLang === 'function') {
-    setGlobalLang(urlLang);
+  const initialLang = SUPPORTED.includes(urlLang) ? urlLang : detectBrowserLang();
+
+  if (initialLang !== 'en' && typeof setGlobalLang === 'function') {
+    setGlobalLang(initialLang);
   }
-  document.documentElement.lang = SUPPORTED.includes(urlLang) ? urlLang : 'en';
+  document.documentElement.lang = initialLang;
 
   document.querySelectorAll('.ln-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -244,7 +274,25 @@ function flyThrough(){
 
 /* ═══════════════════════════════════════════════════
    CV DOWNLOAD
+   One resume per language. UI language codes (en/fr/es/ja) map to
+   resume filename suffixes below — note ja → _jp to match the actual
+   filenames (ELAD_DAUDET_RESUME_en/fr/es/jp.pdf). Any language not listed
+   in RESUME_AVAILABLE falls back to the English resume.
 ═══════════════════════════════════════════════════ */
+const RESUME_SUFFIX = { en: 'en', fr: 'fr', es: 'es', ja: 'jp' };
+const RESUME_FALLBACK = 'ELAD_DAUDET_RESUME_en.pdf';
+/* Resumes that actually exist in the site root. Add/remove a language here
+   when you add/remove its PDF. A static list is used instead of a runtime
+   HEAD request because that check fails under file:// and on hosts that
+   reject HEAD, which silently forced every download to the English file. */
+const RESUME_AVAILABLE = ['en', 'fr', 'es', 'ja'];
+
+function resolveResumeURL(){
+  const lang = (typeof getLang === 'function') ? getLang() : 'en';
+  if (!RESUME_AVAILABLE.includes(lang)) return RESUME_FALLBACK;
+  return `ELAD_DAUDET_RESUME_${RESUME_SUFFIX[lang]}.pdf`;
+}
+
 function downloadCV(){
   try{
     const ac=new AudioContext(),osc=ac.createOscillator(),g=ac.createGain();
@@ -256,9 +304,10 @@ function downloadCV(){
     g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+.55);
     osc.start();osc.stop(ac.currentTime+.55);
   }catch(e){}
+  const url = resolveResumeURL();
   const a=document.createElement('a');
-  a.href='ELAD_DAUDET_RESUME.pdf';
-  a.download='ELAD_DAUDET_RESUME.pdf';
+  a.href=url;
+  a.download=url;
   a.click();
 }
 
@@ -278,12 +327,14 @@ function enterVR(){
    INIT ALL
 ═══════════════════════════════════════════════════ */
 function initAll(){
-  spawnStreams();
-  initHeroParticles();
-  initGlobe();
-  initNeural();
-  initHoloCards();
-  checkXR();
+  const run = (fn) => { try { fn(); } catch (e) { console.error('[initAll]', fn.name || 'section init', 'failed:', e); } };
+  run(spawnStreams);
+  run(initHeroParticles);
+  run(initGlobe);
+  run(initNeural);
+  run(initHoloCards);
+  run(initContactForm);
+  run(checkXR);
   setTimeout(()=>{
     animCount($('cnt1'),6,'+');
     animCount($('cnt2'),7);

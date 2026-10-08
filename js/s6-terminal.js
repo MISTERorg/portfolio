@@ -256,9 +256,8 @@ function _terminalFallback() {
     [1900, '<span class="t-line"><span class="t-out">  NAME  </span><span class="t-val">  Elad Anedo Daudet Ikeorah</span></span>'],
     [2100, '<span class="t-line"><span class="t-out">  ROLE  </span><span class="t-val">  DevSecOps · Agentic AI Automation Specialist</span></span>'],
     [2300, '<span class="t-line"><span class="t-out">  EMAIL </span><span class="t-val">  eladdaudet1918@gmail.com</span></span>'],
-    [2500, '<span class="t-line"><span class="t-out">  TEL   </span><span class="t-val">  +91 89834 61149</span></span>'],
-    [2700, '<span class="t-line"><span class="t-out">  BASE  </span><span class="t-val">  Valencia, Spain · Open to Relocation</span></span>'],
-    [2900, '<span class="t-line"><span class="t-out">  EXP   </span><span class="t-val">  6+ years · 7 cities · 4 languages</span></span>'],
+    [2500, '<span class="t-line"><span class="t-out">  BASE  </span><span class="t-val">  Valencia, Spain · Open to Relocation</span></span>'],
+    [2700, '<span class="t-line"><span class="t-out">  EXP   </span><span class="t-val">  6+ years · 7 cities · 4 languages</span></span>'],
     [3100, '<span class="t-line"><span class="t-out">╚═════════════════════════════════════════════╝</span></span>'],
     [3700, '<span class="t-line"><span class="t-prompt">system@nexus:~$</span> <span class="t-cmd">ls ./links/</span></span>'],
     [4200, '<span class="t-line"><span class="t-warn">linkedin/  github/  gitlab/  youtube/  email/</span></span>'],
@@ -269,4 +268,56 @@ function _terminalFallback() {
     [5900, '<span class="t-line"><span class="t-dim">youtube  </span><span class="t-info"> youtube.com/@eladdaudet</span></span>'],
     [6300, '<span class="t-line"><span class="t-prompt">system@nexus:~$</span> <span class="t-out">ready to connect. <span class="cursor-blink"></span></span></span>'],
   ];
+}
+
+/* ═══════════════════════════════════════════════════
+   CONTACT FORM
+   Fetch-based submit (no page navigation on send). Detects the
+   unconfigured Formspree placeholder and shows a clear message
+   instead of silently failing — see the HTML comment above the
+   <form> in index.html for setup steps.
+═══════════════════════════════════════════════════ */
+function initContactForm(){
+  const form = document.getElementById('contactForm');
+  if (!form) return;
+  const status = document.getElementById('cfStatus');
+  const label  = document.getElementById('cfSubmitLabel');
+  const submitBtn = form.querySelector('.cf-submit');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const endpoint = form.getAttribute('action') || '';
+
+    if (!endpoint || endpoint.indexOf('YOUR_FORM_ID') !== -1) {
+      status.textContent = 'Contact form isn\u2019t connected yet \u2014 sign up at formspree.io and swap in the real endpoint.';
+      status.style.color = 'var(--warn)';
+      return;
+    }
+
+    label.textContent = 'SENDING\u2026';
+    submitBtn.disabled = true;
+    status.textContent = '';
+
+    try {
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form)
+      });
+      if (res.ok) {
+        status.textContent = 'Message sent \u2014 thanks, I\u2019ll get back to you soon.';
+        status.style.color = 'var(--nm)';
+        form.reset();
+      } else {
+        throw new Error('Form submission failed with status ' + res.status);
+      }
+    } catch (err) {
+      console.error('[contact form]', err);
+      status.textContent = 'Something went wrong \u2014 feel free to email me directly instead.';
+      status.style.color = 'var(--warn)';
+    } finally {
+      label.textContent = 'SEND MESSAGE';
+      submitBtn.disabled = false;
+    }
+  });
 }
