@@ -14,7 +14,7 @@
 
 **DevSecOps Engineer · Agentic AI Automation Specialist · Digital Nomad**
 
-[![Live Demo](https://img.shields.io/badge/LIVE-DEMO-00f2ff?style=for-the-badge&logo=vercel&logoColor=black)](https://eladdaudet.dev)
+[![Live Demo](https://img.shields.io/badge/LIVE-DEMO-00f2ff?style=for-the-badge&logo=vercel&logoColor=black)](https://misterorg.github.io/portfolio/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Elad_Daudet-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/elad-daudet)
 [![GitHub](https://img.shields.io/badge/GitHub-MISTERorg-181717?style=for-the-badge&logo=github)](https://github.com/MISTERorg)
 [![GitLab](https://img.shields.io/badge/GitLab-mistercomp1-FC6D26?style=for-the-badge&logo=gitlab)](https://gitlab.com/mistercomp1)
